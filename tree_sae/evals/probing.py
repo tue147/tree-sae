@@ -50,6 +50,8 @@ def train_multi_probe(
     extra_loss_fn: Callable[[LinearProbe, torch.Tensor, torch.Tensor], torch.Tensor] | None = None,
     verbose: bool = False,
     device: torch.device | str = DEFAULT_DEVICE,
+    map_acts: Callable[[torch.Tensor], torch.Tensor] | None = None,
+    probe_dim: int | None = None,
 ) -> LinearProbe:
     """Train ``num_probes`` one-vs-rest logistic-regression probes at once.
 
@@ -57,11 +59,13 @@ def train_multi_probe(
         x_train: ``(n_samples, input_dim)`` inputs.
         y_train: ``(n_samples, num_probes)`` multi-hot labels in ``{0, 1}``; positives are re-weighted
             by the negative/positive ratio of every probe.
+        map_acts: Optional map applied to every input batch (e.g. SAE encoding); ``probe_dim`` is
+            then the dimension of the mapped inputs.
     """
     dtype = x_train.dtype
     num_probes = num_probes or y_train.shape[-1]
     loader = DataLoader(TensorDataset(x_train, y_train.to(dtype=dtype)), batch_size=batch_size, shuffle=True)
-    probe = LinearProbe(x_train.shape[-1], num_outputs=num_probes).to(device, dtype=dtype)
+    probe = LinearProbe(probe_dim or x_train.shape[-1], num_outputs=num_probes).to(device, dtype=dtype)
     _run_probe_training(
         probe,
         loader,
@@ -75,6 +79,7 @@ def train_multi_probe(
         extra_loss_fn=extra_loss_fn,
         verbose=verbose,
         device=device,
+        map_acts=map_acts,
     )
     return probe
 
@@ -97,6 +102,7 @@ def _run_probe_training(
     extra_loss_fn: Callable[[LinearProbe, torch.Tensor, torch.Tensor], torch.Tensor] | None,
     verbose: bool,
     device: torch.device | str,
+    map_acts: Callable[[torch.Tensor], torch.Tensor] | None = None,
 ) -> None:
     probe.train()
     optimizer_cls = {"Adam": optim.Adam, "SGD": optim.SGD, "AdamW": optim.AdamW}[optimizer_name]
@@ -109,6 +115,8 @@ def _run_probe_training(
         epoch_loss = 0.0
         for x, y in tqdm(loader, disable=not show_progress, leave=False, desc=f"Epoch {epoch + 1}/{num_epochs}"):
             x, y = x.to(device), y.to(device)
+            if map_acts is not None:
+                x = map_acts(x)
             optimizer.zero_grad()
             loss = loss_fn(probe(x), y)
             if extra_loss_fn is not None:

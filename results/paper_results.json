@@ -1,0 +1,678 @@
+{
+  "_description": "Numbers plotted in the paper (arXiv:2605.07922v2). Lists follow the order of the 'x' key.",
+  "main": {
+    "x": "L0",
+    "L0": [
+      32,
+      48,
+      64,
+      80
+    ],
+    "mp_sae_average_L0": [
+      31.5,
+      46.3,
+      61.8,
+      75.4
+    ],
+    "_note": "MP-SAE is trained with a maximum of k = 32, 48, 64, 80 active features; its measured average L0 is mp_sae_average_L0.",
+    "splitting": {
+      "topk": [
+        1.5769,
+        1.3846,
+        1.6154,
+        1.4231
+      ],
+      "mp_sae": [
+        2.5385,
+        2.1538,
+        1.8077,
+        1.8462
+      ],
+      "matryoshka_2layer": [
+        1.3077,
+        1.2692,
+        1.0769,
+        1.0769
+      ],
+      "matryoshka_4layer": [
+        1.1923,
+        1.0385,
+        1.0769,
+        1.0769
+      ],
+      "tree_sae_2layer": [
+        1.2692,
+        1.1154,
+        1.1154,
+        1.1154
+      ],
+      "tree_sae_4layer": [
+        1.2692,
+        1.1154,
+        1.0769,
+        1.0
+      ]
+    },
+    "absorption": {
+      "topk": [
+        0.2161,
+        0.1643,
+        0.1547,
+        0.1405
+      ],
+      "mp_sae": [
+        0.3323,
+        0.315,
+        0.3066,
+        0.2722
+      ],
+      "matryoshka_2layer": [
+        0.1594,
+        0.1356,
+        0.1169,
+        0.1061
+      ],
+      "matryoshka_4layer": [
+        0.1253,
+        0.1043,
+        0.078,
+        0.0764
+      ],
+      "tree_sae_2layer": [
+        0.1661,
+        0.1394,
+        0.1145,
+        0.1128
+      ],
+      "tree_sae_4layer": [
+        0.1322,
+        0.1059,
+        0.1132,
+        0.079
+      ]
+    },
+    "autointerp": {
+      "topk": [
+        0.8861,
+        0.8789,
+        0.8871,
+        0.8571
+      ],
+      "mp_sae": [
+        0.83036,
+        0.8143,
+        0.8086,
+        0.8089
+      ],
+      "matryoshka_2layer": [
+        0.8861,
+        0.8919,
+        0.8861,
+        0.8664
+      ],
+      "matryoshka_4layer": [
+        0.885,
+        0.8862,
+        0.8821,
+        0.8754
+      ],
+      "tree_sae_2layer": [
+        0.8907,
+        0.8705,
+        0.8886,
+        0.8819
+      ],
+      "tree_sae_4layer": [
+        0.8893,
+        0.8844,
+        0.8805,
+        0.877
+      ]
+    },
+    "composition": {
+      "topk": [
+        0.3611,
+        0.3328,
+        0.3111,
+        0.2955
+      ],
+      "mp_sae": [
+        0.393,
+        0.3622,
+        0.3308,
+        0.3092
+      ],
+      "matryoshka_2layer": [
+        0.2816,
+        0.2583,
+        0.2445,
+        0.2335
+      ],
+      "matryoshka_4layer": [
+        0.2627,
+        0.2404,
+        0.2279,
+        0.2193
+      ],
+      "tree_sae_2layer": [
+        0.2735,
+        0.2552,
+        0.2487,
+        0.2416
+      ],
+      "tree_sae_4layer": [
+        0.2947,
+        0.2806,
+        0.2727,
+        0.2645
+      ]
+    },
+    "variance_explained": {
+      "topk": [
+        0.9926,
+        0.9929,
+        0.9931,
+        0.9934
+      ],
+      "matryoshka_2layer": [
+        0.9921,
+        0.9925,
+        0.9929,
+        0.9931
+      ],
+      "matryoshka_4layer": [
+        0.9917,
+        0.9922,
+        0.9927,
+        0.993
+      ],
+      "tree_sae_2layer": [
+        0.9951,
+        0.9958,
+        0.9961,
+        0.9965
+      ],
+      "tree_sae_4layer": [
+        0.9946,
+        0.9954,
+        0.9958,
+        0.9961
+      ],
+      "mp_sae": [
+        0.9963,
+        0.9971,
+        0.9977,
+        0.998
+      ]
+    },
+    "downstream_ce_loss": {
+      "topk": [
+        3.9391,
+        3.9319,
+        3.9249,
+        3.9167
+      ],
+      "matryoshka_2layer": [
+        3.9588,
+        3.9533,
+        3.9477,
+        3.9375
+      ],
+      "matryoshka_4layer": [
+        4.0205,
+        3.9716,
+        3.9713,
+        3.9617
+      ],
+      "tree_sae_2layer": [
+        3.9009,
+        3.8731,
+        3.8619,
+        3.8568
+      ],
+      "tree_sae_4layer": [
+        3.9279,
+        3.8898,
+        3.8722,
+        3.8601
+      ],
+      "mp_sae": [
+        3.8372,
+        3.8085,
+        3.802,
+        3.8076
+      ]
+    },
+    "hierarchy": {
+      "topk": [
+        0.17,
+        0.12,
+        0.08,
+        0.22
+      ],
+      "mp_sae": [
+        0.01,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "matryoshka_2layer": [
+        0.16,
+        0.16,
+        0.15,
+        0.16
+      ],
+      "matryoshka_4layer": [
+        0.19,
+        0.08,
+        0.06,
+        0.05
+      ],
+      "tree_sae_2layer_mcs": [
+        0.74,
+        0.66,
+        0.53,
+        0.48
+      ],
+      "tree_sae_4layer_mcs": [
+        0.63,
+        0.63,
+        0.59,
+        0.57
+      ],
+      "tree_sae_2layer_tree_structure": [
+        0.7,
+        0.63,
+        0.58,
+        0.8
+      ],
+      "tree_sae_4layer_tree_structure": [
+        0.83,
+        0.88,
+        0.83,
+        0.78
+      ]
+    },
+    "hierarchy_mcs_variants": {
+      "tree_sae_2layer_binary": [
+        0.74,
+        0.66,
+        0.53,
+        0.48
+      ],
+      "tree_sae_4layer_binary": [
+        0.63,
+        0.63,
+        0.59,
+        0.57
+      ],
+      "tree_sae_2layer_scaled_binary": [
+        0.67,
+        0.64,
+        0.52,
+        0.46
+      ],
+      "tree_sae_4layer_scaled_binary": [
+        0.58,
+        0.6,
+        0.54,
+        0.59
+      ],
+      "tree_sae_2layer_correlation": [
+        0.56,
+        0.48,
+        0.35,
+        0.37
+      ],
+      "tree_sae_4layer_correlation": [
+        0.44,
+        0.42,
+        0.38,
+        0.17
+      ],
+      "tree_sae_2layer_scaled_correlation": [
+        0.17,
+        0.04,
+        0.08,
+        0.03
+      ],
+      "tree_sae_4layer_scaled_correlation": [
+        0.11,
+        0.06,
+        0.11,
+        0.02
+      ]
+    },
+    "sibling_cooccurrence": {
+      "tree_sae_2layer": [
+        0.013,
+        0.017,
+        0.025,
+        0.027
+      ],
+      "tree_sae_4layer": [
+        0.01,
+        0.019,
+        0.024,
+        0.028
+      ]
+    },
+    "average_L0_per_layer": {
+      "matryoshka_2layer": [
+        [
+          26.11,
+          5.89
+        ],
+        [
+          39.7,
+          8.3
+        ],
+        [
+          53.01,
+          10.99
+        ],
+        [
+          68.51,
+          10.49
+        ]
+      ],
+      "tree_sae_2layer": [
+        [
+          26,
+          6
+        ],
+        [
+          40,
+          8
+        ],
+        [
+          53,
+          11
+        ],
+        [
+          69,
+          11
+        ]
+      ],
+      "matryoshka_4layer": [
+        [
+          20.68,
+          4.71,
+          3.79,
+          2.82
+        ],
+        [
+          32.22,
+          6.87,
+          5.2,
+          3.71
+        ],
+        [
+          43.41,
+          9.02,
+          6.33,
+          5.24
+        ],
+        [
+          55.94,
+          10.79,
+          7.51,
+          5.76
+        ]
+      ],
+      "tree_sae_4layer": [
+        [
+          21,
+          5,
+          4,
+          2
+        ],
+        [
+          32,
+          7,
+          5,
+          4
+        ],
+        [
+          44,
+          9,
+          6,
+          5
+        ],
+        [
+          56,
+          11,
+          7,
+          6
+        ]
+      ]
+    }
+  },
+  "scaling": {
+    "x": "dictionary size",
+    "dictionary_size": [
+      "6k",
+      "24k",
+      "49k"
+    ],
+    "L0": [
+      8,
+      32,
+      64
+    ],
+    "splitting": {
+      "matryoshka_2layer": [
+        1.6154,
+        1.3077,
+        1.2308
+      ],
+      "matryoshka_4layer": [
+        1.6538,
+        1.1923,
+        1.2692
+      ],
+      "tree_sae_2layer": [
+        1.8846,
+        1.2692,
+        1.2307
+      ],
+      "tree_sae_4layer": [
+        1.9615,
+        1.2692,
+        1.2308
+      ]
+    },
+    "absorption": {
+      "matryoshka_2layer": [
+        0.2085,
+        0.1594,
+        0.1348
+      ],
+      "matryoshka_4layer": [
+        0.2001,
+        0.1253,
+        0.1232
+      ],
+      "tree_sae_2layer": [
+        0.144,
+        0.1661,
+        0.1329
+      ],
+      "tree_sae_4layer": [
+        0.1473,
+        0.1322,
+        0.1268
+      ]
+    },
+    "autointerp": {
+      "matryoshka_2layer": [
+        0.8529,
+        0.8861,
+        0.8822
+      ],
+      "matryoshka_4layer": [
+        0.8271,
+        0.885,
+        0.8833
+      ],
+      "tree_sae_2layer": [
+        0.8611,
+        0.8907,
+        0.8887
+      ],
+      "tree_sae_4layer": [
+        0.8517,
+        0.8893,
+        0.8738
+      ]
+    },
+    "composition": {
+      "matryoshka_2layer": [
+        0.4781,
+        0.2816,
+        0.2492
+      ],
+      "matryoshka_4layer": [
+        0.4613,
+        0.2627,
+        0.2357
+      ],
+      "tree_sae_2layer": [
+        0.2861,
+        0.2735,
+        0.2444
+      ],
+      "tree_sae_4layer": [
+        0.371,
+        0.2947,
+        0.2569
+      ]
+    },
+    "variance_explained": {
+      "matryoshka_2layer": [
+        0.9871,
+        0.9921,
+        0.9932
+      ],
+      "matryoshka_4layer": [
+        0.9864,
+        0.9917,
+        0.993
+      ],
+      "tree_sae_2layer": [
+        0.9881,
+        0.9951,
+        0.9967
+      ],
+      "tree_sae_4layer": [
+        0.9877,
+        0.9946,
+        0.9966
+      ]
+    },
+    "downstream_ce_loss": {
+      "matryoshka_2layer": [
+        4.4197,
+        3.9588,
+        3.9545
+      ],
+      "matryoshka_4layer": [
+        4.5387,
+        4.0205,
+        3.9676
+      ],
+      "tree_sae_2layer": [
+        4.5181,
+        3.9009,
+        3.8583
+      ],
+      "tree_sae_4layer": [
+        4.5812,
+        3.9279,
+        3.8544
+      ]
+    },
+    "hierarchy": {
+      "matryoshka_2layer": [
+        0.15,
+        0.16,
+        0.12
+      ],
+      "matryoshka_4layer": [
+        0.14,
+        0.19,
+        0.1
+      ],
+      "tree_sae_2layer_mcs": [
+        0.72,
+        0.74,
+        0.48
+      ],
+      "tree_sae_4layer_mcs": [
+        0.81,
+        0.63,
+        0.67
+      ],
+      "tree_sae_2layer_tree_structure": [
+        0.68,
+        0.7,
+        0.51
+      ],
+      "tree_sae_4layer_tree_structure": [
+        0.81,
+        0.83,
+        0.65
+      ]
+    },
+    "average_L0_per_layer": {
+      "matryoshka_2layer": {
+        "6k": [
+          5.8,
+          2.2
+        ],
+        "49k": [
+          55.94,
+          8.06
+        ]
+      },
+      "tree_sae_2layer": {
+        "6k": [
+          6,
+          2
+        ],
+        "49k": [
+          55,
+          9
+        ]
+      },
+      "matryoshka_4layer": {
+        "6k": [
+          5.25,
+          0.41,
+          0.89,
+          1.45
+        ],
+        "49k": [
+          51.3,
+          3.37,
+          5.22,
+          4.11
+        ]
+      },
+      "tree_sae_4layer": {
+        "6k": [
+          5,
+          1,
+          1,
+          1
+        ],
+        "49k": [
+          51,
+          4,
+          5,
+          4
+        ]
+      }
+    }
+  }
+}

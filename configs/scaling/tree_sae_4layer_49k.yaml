@@ -1,0 +1,30 @@
+name: tree_sae_4layer_49k
+model_name: gpt2-small
+tokenizer_name: gpt2
+hook_name: blocks.5.hook_resid_pre
+batch_size: 5
+seq_len: 1024
+max_tokens: 500000000
+lr: 0.0001
+sae:
+  type: tree
+  features_per_layer:
+  - 6144
+  - 3072
+  - 18432
+  - 21504
+  k_per_layer:
+  - 51
+  - 4
+  - 5
+  - 4
+  auxk: 256
+  auxk_coef: 0.03125
+  parent_eligibility_tokens: 50000
+  realloc_interval: 3000
+  realloc_interval_growth: 2.0
+  max_realloc_interval: 10000
+  root_reset_step: 50000
+  root_init_frac: 0.0
+  aux_layers:
+  - 0

@@ -1,0 +1,18 @@
+name: matryoshka_4layer_l0_48
+model_name: gpt2-small
+tokenizer_name: gpt2
+hook_name: blocks.5.hook_resid_pre
+batch_size: 5
+seq_len: 1024
+max_tokens: 500000000
+lr: 0.0001
+sae:
+  type: matryoshka
+  features_per_layer:
+  - 1536
+  - 3072
+  - 9216
+  - 10752
+  k: 48
+  auxk: 256
+  auxk_coef: 0.03125

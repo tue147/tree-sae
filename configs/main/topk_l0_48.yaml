@@ -1,0 +1,14 @@
+name: topk_l0_48
+model_name: gpt2-small
+tokenizer_name: gpt2
+hook_name: blocks.5.hook_resid_pre
+batch_size: 5
+seq_len: 1024
+max_tokens: 500000000
+lr: 0.0001
+sae:
+  type: topk
+  d_sae: 24576
+  k: 48
+  auxk: 256
+  auxk_coef: 0.03125

@@ -1,0 +1,119 @@
+# Paper name -> research checkpoint in the private repository (GPT-2 small, blocks.5.hook_resid_pre).
+# Matryoshka checkpoints do not store their layer boundaries, so they are listed here.
+saes:
+  topk_l0_32: {type: topk, file: topk_32.0_32_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt}
+  mp_sae_k_32: {type: mp, file: mpsae_32.0_32_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt}
+  matryoshka_2layer_l0_32:
+    type: matryoshka
+    boundaries: [6144]
+    features_per_layer: [6144, 18432]
+    file: topk_matryoshka_32.0_6144_32_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  matryoshka_4layer_l0_32:
+    type: matryoshka
+    boundaries: [1536, 4608, 13824]
+    features_per_layer: [1536, 3072, 9216, 10752]
+    file: topk_matryoshka_32.0_1536_4608_13824_32_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  tree_sae_2layer_l0_32:
+    type: tree
+    features_per_layer: [6144, 18432]
+    file: New_rootreset_topk_tree_sae_32.0_6144_26_6_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  tree_sae_4layer_l0_32:
+    type: tree
+    features_per_layer: [1536, 3072, 9216, 10752]
+    file: New_rootreset_topk_tree_sae_32.0_1536_4608_13824_21_5_4_2_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  topk_l0_48: {type: topk, file: topk_32.0_48_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt}
+  mp_sae_k_48: {type: mp, file: mpsae_32.0_48_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt}
+  matryoshka_2layer_l0_48:
+    type: matryoshka
+    boundaries: [6144]
+    features_per_layer: [6144, 18432]
+    file: topk_matryoshka_32.0_6144_48_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  matryoshka_4layer_l0_48:
+    type: matryoshka
+    boundaries: [1536, 4608, 13824]
+    features_per_layer: [1536, 3072, 9216, 10752]
+    file: topk_matryoshka_32.0_1536_4608_13824_48_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  tree_sae_2layer_l0_48:
+    type: tree
+    features_per_layer: [6144, 18432]
+    file: New_rootreset_topk_tree_sae_32.0_6144_40_8_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  tree_sae_4layer_l0_48:
+    type: tree
+    features_per_layer: [1536, 3072, 9216, 10752]
+    file: New_rootreset_topk_tree_sae_32.0_1536_4608_13824_32_7_5_4_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  topk_l0_64: {type: topk, file: topk_32.0_64_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt}
+  mp_sae_k_64: {type: mp, file: mpsae_32.0_64_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt}
+  matryoshka_2layer_l0_64:
+    type: matryoshka
+    boundaries: [6144]
+    features_per_layer: [6144, 18432]
+    file: topk_matryoshka_32.0_6144_64_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  matryoshka_4layer_l0_64:
+    type: matryoshka
+    boundaries: [1536, 4608, 13824]
+    features_per_layer: [1536, 3072, 9216, 10752]
+    file: topk_matryoshka_32.0_1536_4608_13824_64_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  tree_sae_2layer_l0_64:
+    type: tree
+    features_per_layer: [6144, 18432]
+    file: New_rootreset_topk_tree_sae_32.0_6144_53_11_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  tree_sae_4layer_l0_64:
+    type: tree
+    features_per_layer: [1536, 3072, 9216, 10752]
+    file: New_rootreset_topk_tree_sae_32.0_1536_4608_13824_44_9_6_5_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  topk_l0_80: {type: topk, file: topk_32.0_80_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt}
+  mp_sae_k_80: {type: mp, file: mpsae_32.0_80_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt}
+  matryoshka_2layer_l0_80:
+    type: matryoshka
+    boundaries: [6144]
+    features_per_layer: [6144, 18432]
+    file: topk_matryoshka_32.0_6144_80_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  matryoshka_4layer_l0_80:
+    type: matryoshka
+    boundaries: [1536, 4608, 13824]
+    features_per_layer: [1536, 3072, 9216, 10752]
+    file: topk_matryoshka_32.0_1536_4608_13824_80_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  tree_sae_2layer_l0_80:
+    type: tree
+    features_per_layer: [6144, 18432]
+    file: New_rootreset_topk_tree_sae_32.0_6144_69_11_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  tree_sae_4layer_l0_80:
+    type: tree
+    features_per_layer: [1536, 3072, 9216, 10752]
+    file: New_rootreset_topk_tree_sae_32.0_1536_4608_13824_56_11_7_6_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  matryoshka_2layer_6k:
+    type: matryoshka
+    boundaries: [1536]
+    features_per_layer: [1536, 4608]
+    file: topk_matryoshka_8.0_1536_8_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  matryoshka_4layer_6k:
+    type: matryoshka
+    boundaries: [768, 1152, 3456]
+    features_per_layer: [768, 384, 2304, 2688]
+    file: topk_matryoshka_8.0_768_1152_3456_8_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  tree_sae_2layer_6k:
+    type: tree
+    features_per_layer: [1536, 4608]
+    file: New_rootreset_topk_tree_sae_8.0_1536_6_2_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  tree_sae_4layer_6k:
+    type: tree
+    features_per_layer: [768, 384, 2304, 2688]
+    file: New_rootreset_topk_tree_sae_8.0_768_1152_3456_5_1_1_1_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  matryoshka_2layer_49k:
+    type: matryoshka
+    boundaries: [12288]
+    features_per_layer: [12288, 36864]
+    file: topk_matryoshka_64.0_12288_64_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  matryoshka_4layer_49k:
+    type: matryoshka
+    boundaries: [6144, 9216, 27648]
+    features_per_layer: [6144, 3072, 18432, 21504]
+    file: topk_matryoshka_64.0_6144_9216_27648_64_blocks.5.hook_resid_pre_0.0001_256_0.03125_42.ckpt
+  tree_sae_2layer_49k:
+    type: tree
+    features_per_layer: [12288, 36864]
+    file: New_rootreset_topk_tree_sae_64.0_12288_55_9_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
+  tree_sae_4layer_49k:
+    type: tree
+    features_per_layer: [6144, 3072, 18432, 21504]
+    file: New_rootreset_topk_tree_sae_64.0_6144_9216_27648_51_4_5_4_blocks.5.hook_resid_pre_gpt2-small_0.0001_256_0.03125_42.ckpt
