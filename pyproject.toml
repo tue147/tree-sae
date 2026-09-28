@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tree-sae"
+version = "1.0.0"
+description = "Tree SAE: Learning Hierarchical Feature Structures in Sparse Autoencoders"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Tue M. Cao" }]
+dependencies = [
+    "torch>=2.5",
+    "transformer-lens==2.11.0",
+    "sae-lens==5.3.0",
+    "transformers==4.48.0",
+    "lightning==2.5.0.post0",
+    "datasets==2.21.0",
+    "einops",
+    "numpy<2",
+    "pandas<3",
+    "scikit-learn",
+    "safetensors",
+    "huggingface-hub",
+    "pyyaml",
+    "tqdm",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+autointerp = ["openai==1.61.1", "python-dotenv"]
+wandb = ["wandb"]
+dev = ["pytest", "ruff", "pre-commit", "nbformat", "ipykernel"]
+
+[tool.setuptools.packages.find]
+include = ["tree_sae*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E741"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["gpu: needs a CUDA GPU", "slow: downloads models/data"]

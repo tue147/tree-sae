@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.env
+checkpoints/
+wandb_logs/
+lightning_logs/
+outputs/
+.ipynb_checkpoints/
