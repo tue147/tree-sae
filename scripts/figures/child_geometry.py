@@ -24,7 +24,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     add_common_args(parser)
     parser.add_argument("--parent", type=int, required=True)
-    parser.add_argument("--vectors", choices=["decoder", "encoder"], default="decoder")
+    parser.add_argument("--vectors", choices=["encoder", "decoder"], default="encoder")
     parser.add_argument("--vector_length", type=float, default=10.0)
     args = parser.parse_args()
 

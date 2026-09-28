@@ -61,6 +61,8 @@ def main() -> None:
     parser.add_argument("--only", nargs="*", default=None, help="Convert only these paper names")
     args = parser.parse_args()
 
+    Path(args.out_dir).mkdir(parents=True, exist_ok=True)
+    (Path(args.out_dir) / "README.md").write_text(MANIFEST.with_name("MODEL_CARD.md").read_text())
     manifest = yaml.safe_load(MANIFEST.read_text())
     for name, entry in manifest["saes"].items():
         if args.only and name not in args.only:

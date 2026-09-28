@@ -50,7 +50,7 @@ def plot_child_geometry(
     acts: Tensor,
     indices: Tensor,
     parent: int,
-    vectors: Literal["decoder", "encoder"] = "decoder",
+    vectors: Literal["encoder", "decoder"] = "encoder",
     vector_length: float = 10.0,
     min_points: int = 0,
     ax=None,
@@ -60,7 +60,7 @@ def plot_child_geometry(
 
     Args:
         indices: ``(n_tokens, k)`` active feature ids of ``acts`` (inactive entries padded to ``d_sae``).
-        vectors: Which feature vectors to draw (the paper figure uses the decoder vectors).
+        vectors: Which feature vectors to draw: encoder vectors (as in the paper) or decoder vectors.
         vector_length: Length of the drawn directions, in PCA units.
         min_points: Only draw children labelling more than this many points.
     """
