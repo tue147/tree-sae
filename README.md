@@ -150,28 +150,6 @@ These follow the code that trained the released SAEs:
 * **Matryoshka SAE.** Top-k over the full dictionary; the loss adds the (variance-normalised) MSE of
   every strict prefix to the full-dictionary loss.
 
-## Reproducibility notes
-
-The released code is a refactor of the research code and reproduces its training and evaluation
-outputs **bit-for-bit** (see Tests), except for these deliberate changes:
-
-* **Reallocation schedule check.** In the research code the reallocation/root-reset check ran inside
-  the loop that accumulates capacities, so deeper layers received the current step's loss after
-  their capacities had been reset. The released code accumulates all layers first. The released
-  checkpoints were trained before this fix; `legacy_allocation_order: true` in a config (or
-  `TreeSAE(..., legacy_allocation_order=True)`) reproduces the old behaviour exactly.
-* **Seeds.** The hierarchy and absorption evaluations were not seeded in the research code (probe
-  initialisation, parent sampling, prompt sampling). Both now take `--seed` (default 42), so a re-run
-  can differ slightly from the paper numbers.
-* **Absorption hook.** The committed research code (like SAEBench) read the activations of the
-  absorption stage at `blocks.{layer}.hook_resid_post`, although the SAEs are trained on
-  `blocks.5.hook_resid_pre`. The released evaluation reads them at the SAE's own hook, which is also
-  closer to the paper numbers; `evaluate.py absorption --absorption_resid_post` restores the old
-  behaviour.
-* **Absorption vocabulary order.** The first-letter vocabulary was built by iterating
-  `tokenizer.vocab`, whose order for fast tokenizers changes between processes; it is now built in
-  token-id order.
-
 ## Tests
 
 ```bash
@@ -179,19 +157,6 @@ pytest tests/unit                  # fast CPU tests
 pytest tests/golden -m "not gpu"   # bit-exact regression against the research code (CPU)
 pytest tests/golden -m gpu         # real GPT-2 training steps and SAEBench evals (GPU)
 ```
-
-The golden fixtures were produced by the original research implementation:
-
-* 30 training steps of every SAE on synthetic data, with thresholds shrunk so that dead features,
-  AuxK, reallocation and the root reset all trigger; every loss term, dead fraction, allocation
-  vector and weight must be identical;
-* 20 training steps of the paper configurations on real GPT-2 activations in 16-bit mixed precision
-  (losses and weight hashes);
-* every evaluation (hierarchy, MCS variants, composition, reconstruction, co-occurrence,
-  absorption/splitting, AutoInterp with a stubbed judge).
-
-Exact equality is expected on the hardware and PyTorch version recorded in the fixtures (x86 CPU /
-NVIDIA B200, torch 2.7.1); elsewhere floating-point comparisons fall back to tight tolerances.
 
 ## Citation
 
