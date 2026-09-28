@@ -1,13 +1,12 @@
 """Data and activation helpers for AutoInterp (adapted from SAEBench, MIT license)."""
 
-
 from typing import Any
 
 import einops
 import torch
 from beartype import beartype
-from jaxtyping import Bool, Float, Int, jaxtyped
 from datasets import load_dataset
+from jaxtyping import Bool, Float, Int, jaxtyped
 from torch import Tensor
 from tqdm import tqdm
 from transformer_lens import HookedTransformer
@@ -17,9 +16,7 @@ from ...models import BaseSAE
 from ..utils import get_sae_acts
 
 
-def get_dataset_list_of_strs(
-    dataset_name: str, column_name: str, min_row_chars: int, total_chars: int
-) -> list[str]:
+def get_dataset_list_of_strs(dataset_name: str, column_name: str, min_row_chars: int, total_chars: int) -> list[str]:
     dataset = load_dataset(dataset_name, split="train", streaming=True)
 
     total_chars_so_far = 0
@@ -45,9 +42,7 @@ def load_and_tokenize_dataset(
 ) -> torch.Tensor:
     dataset = get_dataset_list_of_strs(dataset_name, column_name, 100, num_tokens * 5)
 
-    tokens = tokenize_and_concat_dataset(
-        tokenizer, dataset, ctx_len, add_bos=add_bos, max_tokens=num_tokens
-    )
+    tokens = tokenize_and_concat_dataset(tokenizer, dataset, ctx_len, add_bos=add_bos, max_tokens=num_tokens)
 
     assert (tokens.shape[0] * tokens.shape[1]) > num_tokens
 
@@ -66,9 +61,7 @@ def tokenize_and_concat_dataset(
     # divide into chunks to speed up tokenization
     num_chunks = 20
     chunk_length = (len(full_text) - 1) // num_chunks + 1
-    chunks = [
-        full_text[i * chunk_length : (i + 1) * chunk_length] for i in range(num_chunks)
-    ]
+    chunks = [full_text[i * chunk_length : (i + 1) * chunk_length] for i in range(num_chunks)]
     tokens = tokenizer(chunks, return_tensors="pt", padding=True)["input_ids"].flatten()  # type: ignore
 
     # remove pad token
@@ -82,9 +75,7 @@ def tokenize_and_concat_dataset(
 
     # drop last batch if not full
     tokens = tokens[: num_batches * seq_len]
-    tokens = einops.rearrange(
-        tokens, "(batch seq) -> batch seq", batch=num_batches, seq=seq_len
-    )
+    tokens = einops.rearrange(tokens, "(batch seq) -> batch seq", batch=num_batches, seq=seq_len)
 
     if add_bos:
         tokens[:, 0] = tokenizer.bos_token_id  # type: ignore
@@ -126,9 +117,7 @@ def collect_sae_activations(
 
     for i in tqdm(range(0, tokens.shape[0], batch_size)):
         tokens_BL = tokens[i : i + batch_size]
-        _, cache = model.run_with_cache(
-            tokens_BL, stop_at_layer=layer + 1, names_filter=hook_name
-        )
+        _, cache = model.run_with_cache(tokens_BL, stop_at_layer=layer + 1, names_filter=hook_name)
         resid_BLD: Float[torch.Tensor, "batch seq_len d_model"] = cache[hook_name]
 
         sae_act_BLF: Float[torch.Tensor, "batch seq_len d_sae"] = get_sae_acts(
@@ -175,9 +164,7 @@ def get_feature_activation_sparsity(
 
     for i in tqdm(range(0, tokens.shape[0], batch_size)):
         tokens_BL = tokens[i : i + batch_size]
-        _, cache = model.run_with_cache(
-            tokens_BL, stop_at_layer=layer + 1, names_filter=hook_name
-        )
+        _, cache = model.run_with_cache(tokens_BL, stop_at_layer=layer + 1, names_filter=hook_name)
         resid_BLD: Float[torch.Tensor, "batch seq_len d_model"] = cache[hook_name]
 
         sae_act_BLF: Float[torch.Tensor, "batch seq_len d_sae"] = get_sae_acts(
@@ -234,9 +221,7 @@ def get_k_largest_indices(
                     seen_positions.add((row, col + offset))
             if len(unique_indices) == k:
                 break
-        rows, cols = torch.tensor(
-            unique_indices, dtype=torch.int64, device=x.device
-        ).unbind(dim=-1)
+        rows, cols = torch.tensor(unique_indices, dtype=torch.int64, device=x.device).unbind(dim=-1)
 
     return torch.stack((rows, cols), dim=1)[:k]
 

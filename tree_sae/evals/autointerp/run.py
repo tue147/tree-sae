@@ -41,16 +41,16 @@ from .output import (
     AutoInterpMetrics,
 )
 
+
 def get_eval_uuid():
     return str(uuid.uuid4())
+
 
 Messages: TypeAlias = list[dict[Literal["role", "content"], str]]
 
 
 def display_messages(messages: Messages) -> str:
-    return tabulate(
-        [m.values() for m in messages], tablefmt="simple_grid", maxcolwidths=[None, 120]
-    )
+    return tabulate([m.values() for m in messages], tablefmt="simple_grid", maxcolwidths=[None, 120])
 
 
 def str_bool(b: bool) -> str:
@@ -78,9 +78,7 @@ class Example:
         self.acts = acts
         self.act_threshold = act_threshold
         self.toks_are_active = [act > act_threshold for act in self.acts]
-        self.is_active = any(
-            self.toks_are_active
-        )  # this is what we predict in the scoring phase
+        self.is_active = any(self.toks_are_active)  # this is what we predict in the scoring phase
 
     def to_str(self, mark_toks: bool = False) -> str:
         return (
@@ -104,9 +102,7 @@ class Examples:
         if shuffle:
             random.shuffle(self.examples)
         else:
-            self.examples = sorted(
-                self.examples, key=lambda x: max(x.acts), reverse=True
-            )
+            self.examples = sorted(self.examples, key=lambda x: max(x.acts), reverse=True)
 
     def display(self, predictions: list[int] | None = None) -> str:
         """
@@ -127,9 +123,7 @@ class Examples:
                 )
                 for i, ex in enumerate(self.examples)
             ],
-            headers=["Top act"]
-            + ([] if predictions is None else ["Active?", "Predicted?"])
-            + ["Sequence"],
+            headers=["Top act"] + ([] if predictions is None else ["Active?", "Predicted?"]) + ["Sequence"],
             tablefmt="simple_outline",
             floatfmt=".3f",
         )
@@ -174,11 +168,7 @@ class AutoInterp:
         else:
             assert self.cfg.n_latents is not None
             sparsity *= cfg.total_tokens
-            alive_latents = (
-                torch.nonzero(sparsity > self.cfg.dead_latent_threshold)
-                .squeeze(1)
-                .tolist()
-            )
+            alive_latents = torch.nonzero(sparsity > self.cfg.dead_latent_threshold).squeeze(1).tolist()
             if len(alive_latents) < self.cfg.n_latents:
                 self.latents = alive_latents
                 print(
@@ -187,7 +177,7 @@ class AutoInterp:
             else:
                 self.latents = random.sample(alive_latents, k=self.cfg.n_latents)
         self.n_latents = len(self.latents)
-        
+
         self.api_key = api_key
 
         # Shared async client (reuse connections). Tune timeout/max_retries to taste.
@@ -214,9 +204,7 @@ class AutoInterp:
         latents_with_data = sorted(generation_examples.keys())
         n_dead = self.n_latents - len(latents_with_data)
         if n_dead > 0:
-            print(
-                f"Found data for {len(latents_with_data)}/{self.n_latents} alive latents; {n_dead} dead"
-            )
+            print(f"Found data for {len(latents_with_data)}/{self.n_latents} alive latents; {n_dead} dead")
 
         # Launch tasks (bounded by feature_sem inside run_single_feature)
         tasks = [
@@ -282,12 +270,9 @@ class AutoInterp:
                 score = self.score_predictions(predictions, scoring_examples)
                 results |= {
                     "predictions": predictions,
-                    "correct seqs": [
-                        i for i, ex in enumerate(scoring_examples, start=1) if ex.is_active
-                    ],
+                    "correct seqs": [i for i, ex in enumerate(scoring_examples, start=1) if ex.is_active],
                     "score": score,
-                    "logs": results["logs"]
-                    + f"\nScoring phase\n{logs}\n{scoring_examples.display(predictions)}",
+                    "logs": results["logs"] + f"\nScoring phase\n{logs}\n{scoring_examples.display(predictions)}",
                 }
 
             return results
@@ -296,13 +281,7 @@ class AutoInterp:
         return explanation.split("activates on")[-1].rstrip(".").strip()
 
     def parse_predictions(self, predictions: str) -> list[int] | None:
-        predictions_split = (
-            predictions.strip()
-            .rstrip(".")
-            .replace("and", ",")
-            .replace("None", "")
-            .split(",")
-        )
+        predictions_split = predictions.strip().rstrip(".").replace("and", ",").replace("None", "").split(",")
         predictions_list = [i.strip() for i in predictions_split if i.strip() != ""]
         if predictions_list == []:
             return []
@@ -311,16 +290,10 @@ class AutoInterp:
         predictions_ints = [int(pred.strip()) for pred in predictions_list]
         return predictions_ints
 
-    def score_predictions(
-        self, predictions: list[int], scoring_examples: Examples
-    ) -> float:
-        classifications = [
-            i in predictions for i in range(1, len(scoring_examples) + 1)
-        ]
+    def score_predictions(self, predictions: list[int], scoring_examples: Examples) -> float:
+        classifications = [i in predictions for i in range(1, len(scoring_examples) + 1)]
         correct_classifications = [ex.is_active for ex in scoring_examples]
-        return sum(
-            [c == cc for c, cc in zip(classifications, correct_classifications)]
-        ) / len(classifications)
+        return sum([c == cc for c, cc in zip(classifications, correct_classifications)]) / len(classifications)
 
     async def get_api_response(
         self, messages: Messages, max_tokens: int, n_completions: int = 1
@@ -346,16 +319,13 @@ class AutoInterp:
                 response = [choice.message.content.strip() for choice in result.choices]
 
                 logs = tabulate(
-                    [
-                        m.values()
-                        for m in messages + [{"role": "assistant", "content": response[0]}]
-                    ],
+                    [m.values() for m in messages + [{"role": "assistant", "content": response[0]}]],
                     tablefmt="simple_grid",
                     maxcolwidths=[None, 120],
                 )
                 return response, logs
 
-            except (RateLimitError, APITimeoutError, APIConnectionError) as e:
+            except (RateLimitError, APITimeoutError, APIConnectionError):
                 if attempt >= self.max_retries:
                     raise
                 # Exponential backoff with jitter
@@ -377,39 +347,25 @@ class AutoInterp:
         assert len(generation_examples) > 0, "No generation examples found"
 
         examples_as_str = "\n".join(
-            [
-                f"{i + 1}. {ex.to_str(mark_toks=True)}"
-                for i, ex in enumerate(generation_examples)
-            ]
+            [f"{i + 1}. {ex.to_str(mark_toks=True)}" for i, ex in enumerate(generation_examples)]
         )
 
         SYSTEM_PROMPT = """We're studying neurons in a neural network. Each neuron activates on some particular word/words/substring/concept in a short document. The activating words in each document are indicated with << ... >>. We will give you a list of documents on which the neuron activates, in order from most strongly activating to least strongly activating. Look at the parts of the document the neuron activates for and summarize in a single sentence what the neuron is activating on. Try not to be overly specific in your explanation. Note that some neurons will activate only on specific words or substrings, but others will activate on most/all words in a sentence provided that sentence contains some particular concept. Your explanation should cover most or all activating words (for example, don't give an explanation which is specific to a single word if all words in a sentence cause the neuron to activate). Pay attention to things like the capitalization and punctuation of the activating words or concepts, if that seems relevant. Keep the explanation as short and simple as possible, limited to 20 words or less. Omit punctuation and formatting. You should avoid giving long lists of words."""
         if self.cfg.use_demos_in_explanation:
             SYSTEM_PROMPT += """ Some examples: "This neuron activates on the word 'knows' in rhetorical questions", and "This neuron activates on verbs related to decision-making and preferences", and "This neuron activates on the substring 'Ent' at the start of words", and "This neuron activates on text about government economic policy"."""
         else:
-            SYSTEM_PROMPT += (
-                """Your response should be in the form "This neuron activates on..."."""
-            )
-        USER_PROMPT = (
-            f"""The activating documents are given below:\n\n{examples_as_str}"""
-        )
+            SYSTEM_PROMPT += """Your response should be in the form "This neuron activates on..."."""
+        USER_PROMPT = f"""The activating documents are given below:\n\n{examples_as_str}"""
 
         return [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": USER_PROMPT},
         ]
 
-    def get_scoring_prompts(
-        self, explanation: str, scoring_examples: Examples
-    ) -> Messages:
+    def get_scoring_prompts(self, explanation: str, scoring_examples: Examples) -> Messages:
         assert len(scoring_examples) > 0, "No scoring examples found"
 
-        examples_as_str = "\n".join(
-            [
-                f"{i + 1}. {ex.to_str(mark_toks=False)}"
-                for i, ex in enumerate(scoring_examples)
-            ]
-        )
+        examples_as_str = "\n".join([f"{i + 1}. {ex.to_str(mark_toks=False)}" for i, ex in enumerate(scoring_examples)])
 
         example_response = sorted(
             random.sample(
@@ -426,9 +382,7 @@ class AutoInterp:
             {"role": "user", "content": USER_PROMPT},
         ]
 
-    def gather_data(
-        self, acts: Tensor | None = None
-    ) -> tuple[dict[int, Examples], dict[int, Examples]]:
+    def gather_data(self, acts: Tensor | None = None) -> tuple[dict[int, Examples], dict[int, Examples]]:
         """
         Stores top acts / random seqs data, which is used for generation & scoring respectively.
         """
@@ -450,9 +404,7 @@ class AutoInterp:
         generation_examples = {}
         scoring_examples = {}
 
-        for i, latent in tqdm(
-            enumerate(self.latents), desc="Collecting examples for LLM judge"
-        ):
+        for i, latent in tqdm(enumerate(self.latents), desc="Collecting examples for LLM judge"):
             # (1/3) Get random examples (we don't need their values)
             rand_indices = torch.stack(
                 [
@@ -465,9 +417,7 @@ class AutoInterp:
                 ],
                 dim=-1,
             )
-            rand_toks = index_with_buffer(
-                self.tokenized_dataset, rand_indices, buffer=self.cfg.buffer
-            )
+            rand_toks = index_with_buffer(self.tokenized_dataset, rand_indices, buffer=self.cfg.buffer)
 
             # (2/3) Get top-scoring examples
             top_indices = get_k_largest_indices(
@@ -476,12 +426,8 @@ class AutoInterp:
                 buffer=self.cfg.buffer,
                 no_overlap=self.cfg.no_overlap,
             )
-            top_toks = index_with_buffer(
-                self.tokenized_dataset, top_indices, buffer=self.cfg.buffer
-            )
-            top_values = index_with_buffer(
-                acts[..., i], top_indices, buffer=self.cfg.buffer
-            )
+            top_toks = index_with_buffer(self.tokenized_dataset, top_indices, buffer=self.cfg.buffer)
+            top_values = index_with_buffer(acts[..., i], top_indices, buffer=self.cfg.buffer)
             act_threshold = self.cfg.act_threshold_frac * top_values.max().item()
 
             # (3/3) Get importance-weighted examples, using a threshold so they're disjoint from top examples
@@ -490,35 +436,19 @@ class AutoInterp:
             acts_thresholded = torch.where(acts[..., i] >= threshold, 0.0, acts[..., i])
             if acts_thresholded[:, self.cfg.buffer : -self.cfg.buffer].max() < 1e-6:
                 continue
-            iw_indices = get_iw_sample_indices(
-                acts_thresholded, k=self.cfg.n_iw_sampled_ex, buffer=self.cfg.buffer
-            )
-            iw_toks = index_with_buffer(
-                self.tokenized_dataset, iw_indices, buffer=self.cfg.buffer
-            )
-            iw_values = index_with_buffer(
-                acts[..., i], iw_indices, buffer=self.cfg.buffer
-            )
+            iw_indices = get_iw_sample_indices(acts_thresholded, k=self.cfg.n_iw_sampled_ex, buffer=self.cfg.buffer)
+            iw_toks = index_with_buffer(self.tokenized_dataset, iw_indices, buffer=self.cfg.buffer)
+            iw_values = index_with_buffer(acts[..., i], iw_indices, buffer=self.cfg.buffer)
 
             # Get random values to use for splitting
             rand_top_ex_split_indices = torch.randperm(self.cfg.n_top_ex)
-            top_gen_indices = rand_top_ex_split_indices[
-                : self.cfg.n_top_ex_for_generation
-            ]
-            top_scoring_indices = rand_top_ex_split_indices[
-                self.cfg.n_top_ex_for_generation :
-            ]
+            top_gen_indices = rand_top_ex_split_indices[: self.cfg.n_top_ex_for_generation]
+            top_scoring_indices = rand_top_ex_split_indices[self.cfg.n_top_ex_for_generation :]
             rand_iw_split_indices = torch.randperm(self.cfg.n_iw_sampled_ex)
-            iw_gen_indices = rand_iw_split_indices[
-                : self.cfg.n_iw_sampled_ex_for_generation
-            ]
-            iw_scoring_indices = rand_iw_split_indices[
-                self.cfg.n_iw_sampled_ex_for_generation :
-            ]
+            iw_gen_indices = rand_iw_split_indices[: self.cfg.n_iw_sampled_ex_for_generation]
+            iw_scoring_indices = rand_iw_split_indices[self.cfg.n_iw_sampled_ex_for_generation :]
 
-            def create_examples(
-                all_toks: Tensor, all_acts: Tensor | None = None
-            ) -> list[Example]:
+            def create_examples(all_toks: Tensor, all_acts: Tensor | None = None) -> list[Example]:
                 if all_acts is None:
                     all_acts = torch.zeros_like(all_toks).float()
                 return [
@@ -537,12 +467,8 @@ class AutoInterp:
                 + create_examples(iw_toks[iw_gen_indices], iw_values[iw_gen_indices]),
             )
             scoring_examples[latent] = Examples(
-                create_examples(
-                    top_toks[top_scoring_indices], top_values[top_scoring_indices]
-                )
-                + create_examples(
-                    iw_toks[iw_scoring_indices], iw_values[iw_scoring_indices]
-                )
+                create_examples(top_toks[top_scoring_indices], top_values[top_scoring_indices])
+                + create_examples(iw_toks[iw_scoring_indices], iw_values[iw_scoring_indices])
                 + create_examples(rand_toks),
                 shuffle=True,
             )
@@ -633,9 +559,7 @@ def run_eval(
         config.model_name, device=device, dtype=llm_dtype
     )
 
-    for sae_id, sae in tqdm(
-        selected_saes, desc="Running SAE evaluation on all selected SAEs"
-    ):
+    for sae_id, sae in tqdm(selected_saes, desc="Running SAE evaluation on all selected SAEs"):
         sae = sae.to(device=device, dtype=llm_dtype)
 
         sae_result_path = os.path.join(output_path, f"local_{sae_id}_eval_results.json".replace("/", "_"))
@@ -646,9 +570,7 @@ def run_eval(
 
         artifacts_folder = os.path.join(artifacts_path, EVAL_TYPE_ID_AUTOINTERP)
 
-        sae_eval_result = run_eval_single_sae(
-            config, sae, model, layer, device, artifacts_folder, api_key, None
-        )
+        sae_eval_result = run_eval_single_sae(config, sae, model, layer, device, artifacts_folder, api_key, None)
 
         # Save nicely formatted logs to a text file, helpful for debugging.
         if save_logs_path is not None:
@@ -671,7 +593,9 @@ def run_eval(
             worst_result = min(sae_eval_result.values(), key=lambda x: x["score"])  # type: ignore
             best_result = max(sae_eval_result.values(), key=lambda x: x["score"])  # type: ignore
             logs += f"\n\nWorst scoring idx {worst_result['latent']}, score = {worst_result['score']}\n{worst_result['logs']}"  # type: ignore
-            logs += f"\n\nBest scoring idx {best_result['latent']}, score = {best_result['score']}\n{best_result['logs']}"  # type: ignore
+            logs += (
+                f"\n\nBest scoring idx {best_result['latent']}, score = {best_result['score']}\n{best_result['logs']}"  # type: ignore
+            )
             # Save the results to a file
             with open(save_logs_path, "a") as f:
                 f.write(logs)
@@ -688,9 +612,7 @@ def run_eval(
             eval_id=eval_instance_id,
             datetime_epoch_millis=int(datetime.now().timestamp() * 1000),
             eval_result_metrics=AutoInterpMetricCategories(
-                autointerp=AutoInterpMetrics(
-                    autointerp_score=score, autointerp_std_dev=std_dev
-                )
+                autointerp=AutoInterpMetrics(autointerp_score=score, autointerp_std_dev=std_dev)
             ),
             eval_result_details=[],
             eval_result_unstructured=sae_eval_result,

@@ -20,7 +20,7 @@ import pytest
 import torch
 from lightning.pytorch import Callback, Trainer
 
-from tree_sae.models import MatryoshkaSAE, MPSAE, ReLUSAE, TopKSAE, TreeSAE
+from tree_sae.models import MPSAE, MatryoshkaSAE, ReLUSAE, TopKSAE, TreeSAE
 from tree_sae.training import SAETrainingModule
 from tree_sae.training.trainer import seed_all
 
@@ -205,7 +205,9 @@ def test_training_matches_original(name: str) -> None:
     if golden["tree_trackers"] is not None:
         trackers = golden["tree_trackers"]
         for key, expected in trackers["last_nonzero_sizes"].items():
-            _assert_same(rec.tree_state["steps_since_fired"][boundaries.index(int(key))], expected, True, f"steps {key}")
+            _assert_same(
+                rec.tree_state["steps_since_fired"][boundaries.index(int(key))], expected, True, f"steps {key}"
+            )
         for key, expected in trackers["loss_accumulate_sizes"].items():
             _assert_same(rec.tree_state["capacity"][boundaries.index(int(key))], expected, exact, f"capacity {key}")
         assert rec.tree_state["realloc_interval"] == trackers["nbatch_dynamic_alloc"]

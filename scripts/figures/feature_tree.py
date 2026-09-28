@@ -1,6 +1,6 @@
 """Interactive HTML tree of a Tree SAE parent and its descendants (Figs. 17-20).
 
-    python scripts/figures/feature_tree.py --sae hf:gpt2-small/tree_sae_2layer_l0_48 --root 3410
+python scripts/figures/feature_tree.py --sae hf:gpt2-small/tree_sae_2layer_l0_48 --root 3410
 """
 
 from __future__ import annotations

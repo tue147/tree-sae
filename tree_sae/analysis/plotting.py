@@ -21,7 +21,12 @@ STYLE = {
     "tree_sae_2layer_tree_structure": ("Tree 2 layers (Structure)", RED, "x", ":", 1.0),
     "tree_sae_4layer_tree_structure": ("Tree 4 layers (Structure)", RED, "x", "-", 1.0),
 }
-for variant, color in (("binary", RED), ("scaled_binary", BLUE), ("correlation", GREEN), ("scaled_correlation", ORANGE)):
+for variant, color in (
+    ("binary", RED),
+    ("scaled_binary", BLUE),
+    ("correlation", GREEN),
+    ("scaled_correlation", ORANGE),
+):
     for layers, style in (("2layer", ":"), ("4layer", "-")):
         label = f"Tree {layers[0]} layers {variant.replace('_', ' ').title().replace('Scaled', 'Scale')}"
         STYLE[f"tree_sae_{layers}_{variant}"] = (label, color, "o", style, 1.0)
@@ -68,11 +73,28 @@ def plot_metrics(
             label, color, marker, style, alpha = STYLE[key]
             xs = x[key] if isinstance(x, dict) else x
             xs_all.append(xs)
-            ax.plot(xs, values, color=color, marker=marker, linestyle=style, linewidth=PARAMS["line_width"],
-                    markersize=PARAMS["marker_size"], alpha=alpha)
+            ax.plot(
+                xs,
+                values,
+                color=color,
+                marker=marker,
+                linestyle=style,
+                linewidth=PARAMS["line_width"],
+                markersize=PARAMS["marker_size"],
+                alpha=alpha,
+            )
             if label not in labels:
-                handles.append(plt.Line2D([0], [0], color=color, marker=marker, linestyle=style,
-                                          linewidth=PARAMS["line_width"], markersize=PARAMS["marker_size"]))
+                handles.append(
+                    plt.Line2D(
+                        [0],
+                        [0],
+                        color=color,
+                        marker=marker,
+                        linestyle=style,
+                        linewidth=PARAMS["line_width"],
+                        markersize=PARAMS["marker_size"],
+                    )
+                )
                 labels.append(label)
         ax.set_title(metric, fontsize=PARAMS["title_size"])
         ax.set_xlabel(x_label, fontsize=PARAMS["xlabel_size"])
@@ -94,12 +116,26 @@ def plot_metrics(
 
     if legend == "right":
         plt.tight_layout(rect=(0, 0, right_legend_content, 1))
-        fig.legend(handles, labels, loc="center left", bbox_to_anchor=(right_legend_content + 0.01, 0.5),
-                   ncol=1, fontsize=PARAMS["legend_size"], frameon=True)
+        fig.legend(
+            handles,
+            labels,
+            loc="center left",
+            bbox_to_anchor=(right_legend_content + 0.01, 0.5),
+            ncol=1,
+            fontsize=PARAMS["legend_size"],
+            frameon=True,
+        )
     else:
         plt.tight_layout()
-        fig.legend(handles, labels, loc="lower center", bbox_to_anchor=(0.5, -0.2), ncol=legend_ncol,
-                   fontsize=PARAMS["legend_size"], frameon=True)
+        fig.legend(
+            handles,
+            labels,
+            loc="lower center",
+            bbox_to_anchor=(0.5, -0.2),
+            ncol=legend_ncol,
+            fontsize=PARAMS["legend_size"],
+            frameon=True,
+        )
         plt.subplots_adjust(bottom=0.15)
 
     # Averages over the x axis, drawn just right of each panel.
@@ -111,8 +147,14 @@ def plot_metrics(
         right.set_yticks([])
         for key, values in series.items():
             _, color, _, style, _ = STYLE[key]
-            right.plot([0.95, 1.04], [np.mean(values)] * 2, transform=ax.get_yaxis_transform(), color=color,
-                       linestyle=style, linewidth=PARAMS["line_width"])
+            right.plot(
+                [0.95, 1.04],
+                [np.mean(values)] * 2,
+                transform=ax.get_yaxis_transform(),
+                color=color,
+                linestyle=style,
+                linewidth=PARAMS["line_width"],
+            )
     for ax in axes[n:]:
         ax.set_visible(False)
     return fig

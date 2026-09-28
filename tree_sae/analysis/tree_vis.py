@@ -31,12 +31,13 @@ def save_feature_tree(child_features_tree, feature_data, filename="feature_tree.
     """
     Save the feature tree visualization to an HTML file with hover tooltips
     and a scrollable, clickable details panel that pins node information.
-    
+
     Parameters:
     child_features_tree - dictionary of parent-child relationships
     feature_data - dictionary containing feature details (sparsity, top activations)
     filename - name of the HTML file to save
     """
+
     # Generate the tree structure in JSON format
     def build_tree(parent_id, tree_data):
         children = []
@@ -46,33 +47,33 @@ def save_feature_tree(child_features_tree, feature_data, filename="feature_tree.
                 "feature_id": child_id,
                 "sparsity": feature_data[child_id]["sparsity"],
                 "top_activations": feature_data[child_id]["top_activations"],
-                "children": build_tree(child_id, tree_data)
+                "children": build_tree(child_id, tree_data),
             }
             children.append(node)
         return children
-    
+
     # Find the root (node with no parent)
     root_id = None
     all_children = set()
-    for parent, children in child_features_tree.items():
+    for children in child_features_tree.values():
         all_children.update(children)
-    
+
     for parent in child_features_tree:
         if parent not in all_children:
             root_id = parent
             break
-    
+
     if root_id is None:
         root_id = list(child_features_tree.keys())[0]
-    
+
     tree_structure = {
         "name": f"Feature {root_id}",
         "feature_id": root_id,
         "sparsity": feature_data[root_id]["sparsity"],
         "top_activations": feature_data[root_id]["top_activations"],
-        "children": build_tree(root_id, child_features_tree)
+        "children": build_tree(root_id, child_features_tree),
     }
-    
+
     # HTML and JavaScript for visualization
     html_content = f"""
     <!DOCTYPE html>
@@ -464,9 +465,9 @@ def save_feature_tree(child_features_tree, feature_data, filename="feature_tree.
     </body>
     </html>
     """
-    
+
     # Save to file
-    with open(filename, 'w', encoding='utf-8') as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write(html_content)
 
 

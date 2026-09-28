@@ -15,7 +15,13 @@ from .relu import ReLUSAE
 from .topk import TopKSAE
 from .tree import TreeSAE
 
-_RESEARCH_NAMES = {"sae": "relu", "topk": "topk", "mpsae": "mp", "topk_matryoshka": "matryoshka", "topk_tree_sae": "tree"}
+_RESEARCH_NAMES = {
+    "sae": "relu",
+    "topk": "topk",
+    "mpsae": "mp",
+    "topk_matryoshka": "matryoshka",
+    "topk_tree_sae": "tree",
+}
 
 
 def _layer_sizes(boundaries: list[int], d_sae: int) -> list[int]:

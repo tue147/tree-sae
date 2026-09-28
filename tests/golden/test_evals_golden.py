@@ -84,8 +84,17 @@ def test_hierarchy_pipeline(golden, name):
     indices, values = sae_sparse_activations(sae, golden["acts"], 512, "cpu")
     with torch.no_grad():
         results = run_hierarchy_eval(
-            sae, golden["acts"], indices, values, "cpu", n_parents=args["n_parents"], dense_ratio=args["ratio"],
-            min_child_count=args["min_sample"], probe_epochs=args["epochs"], probe_batch_size=args["bs"], seed=42,
+            sae,
+            golden["acts"],
+            indices,
+            values,
+            "cpu",
+            n_parents=args["n_parents"],
+            dense_ratio=args["ratio"],
+            min_child_count=args["min_sample"],
+            probe_epochs=args["epochs"],
+            probe_batch_size=args["bs"],
+            seed=42,
         )
     for key in ("mcs", "tree"):
         expected = golden["hierarchy"][name][key]
@@ -116,7 +125,9 @@ def test_sibling_cooccurrence(golden):
 def test_reconstruction(golden, name):
     from transformer_lens import HookedTransformer, HookedTransformerConfig
 
-    cfg = HookedTransformerConfig(n_layers=2, d_model=32, n_ctx=32, d_head=8, n_heads=4, d_vocab=97, act_fn="gelu", device="cpu")
+    cfg = HookedTransformerConfig(
+        n_layers=2, d_model=32, n_ctx=32, d_head=8, n_heads=4, d_vocab=97, act_fn="gelu", device="cpu"
+    )
     model = HookedTransformer(cfg)
     model.load_state_dict(golden["tiny_state"])
     result = evaluate_reconstruction(model, _sae(golden, name), golden["tiny_tokens"], 8, "cpu")

@@ -37,10 +37,10 @@ All SAEs of the paper are trained on the residual stream before block 5 of GPT-2
 from tree_sae.models.io import from_pretrained
 
 sae = from_pretrained("gpt2-small/tree_sae_4layer_l0_32", device="cuda")
-latents = sae.encode(activations)[0]         # (..., 24576) feature activations
-recons = sae(activations)                     # reconstruction
-sae.children_of(5)                            # children of feature 5 in the tree
-sae.parent_index(1)                           # allocation vector a_1 (root = sae.root_index(1))
+latents = sae.encode(activations)[0]  # (..., 24576) feature activations
+recons = sae(activations)  # reconstruction
+sae.children_of(5)  # children of feature 5 in the tree
+sae.parent_index(1)  # allocation vector a_1 (root = sae.root_index(1))
 ```
 
 | Paper name | Released names | Features per layer | L0 per layer |

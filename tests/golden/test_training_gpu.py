@@ -76,8 +76,9 @@ def test_gpu_training_matches_original(name: str, gpt2) -> None:
     spec, dead_steps, eligibility_steps = _spec(golden)
     seed_all(42)
     sae = build_sae(spec, 768, HOOK, dead_steps, eligibility_steps)
-    module = SAETrainingModule(sae, lr=golden["common"]["lr"], auxk_coef=spec.auxk_coef,
-                               preprocess=LLMActivations(gpt2, HOOK))
+    module = SAETrainingModule(
+        sae, lr=golden["common"]["lr"], auxk_coef=spec.auxk_coef, preprocess=LLMActivations(gpt2, HOOK)
+    )
 
     class Recorder(Callback):
         loss, metrics, alloc, final = [], [], [], None
@@ -93,8 +94,15 @@ def test_gpu_training_matches_original(name: str, gpt2) -> None:
     rec = Recorder()
     loader = lambda x: torch.utils.data.DataLoader(torch.utils.data.TensorDataset(x), batch_size=None)  # noqa: E731
     Trainer(
-        accelerator="gpu", devices=1, precision="16-mixed", max_steps=len(tokens["train"]), max_epochs=1,
-        logger=False, enable_checkpointing=False, enable_progress_bar=False, enable_model_summary=False,
+        accelerator="gpu",
+        devices=1,
+        precision="16-mixed",
+        max_steps=len(tokens["train"]),
+        max_epochs=1,
+        logger=False,
+        enable_checkpointing=False,
+        enable_progress_bar=False,
+        enable_model_summary=False,
         callbacks=[rec, EarlyStopping(monitor="loss/total", min_delta=0.005, patience=1, mode="min")],
     ).fit(module, train_dataloaders=loader(tokens["train"]), val_dataloaders=loader(tokens["val"]))
 
@@ -107,13 +115,19 @@ def test_gpu_training_matches_original(name: str, gpt2) -> None:
 
     for step, old in enumerate(golden["metrics"]):
         for key, value in old.items():
-            new = key.replace("loss/auxk", "loss/aux").replace("train/dead/abs_", "dead/").replace("train/dead/abs", "dead/0")
+            new = (
+                key.replace("loss/auxk", "loss/aux")
+                .replace("train/dead/abs_", "dead/")
+                .replace("train/dead/abs", "dead/0")
+            )
             new = "loss/mse/0" if new == "loss/mse" else "loss/aux/0" if new == "loss/aux" else new
             if new.startswith(("loss/mse/", "loss/aux/", "dead/")) or new == "loss/total":
                 if exact:
                     assert torch.equal(rec.metrics[step][new].reshape(()), value.reshape(())), (step, key)
                 else:
-                    torch.testing.assert_close(rec.metrics[step][new].reshape(()), value.reshape(()), rtol=1e-3, atol=1e-5)
+                    torch.testing.assert_close(
+                        rec.metrics[step][new].reshape(()), value.reshape(()), rtol=1e-3, atol=1e-5
+                    )
 
     if golden["alloc"] and exact:
         boundaries = [0, *golden["spec"]["sizes"]]

@@ -71,6 +71,12 @@ class AbsorptionEvalConfig(BaseEvalConfig):
         title="Minimum ground truth probe F1 score",
         description="The minimum ground truth probe F1 score for the first-letter feature to be considered present",
     )
+    use_sae_hook_for_absorption: bool = Field(
+        default=False,
+        title="Use the SAE hook for absorption",
+        description="Compute the absorption stage at the SAE's own hook instead of SAEBench's "
+        "blocks.{layer}.hook_resid_post (the paper numbers use hook_resid_post).",
+    )
     min_feats_for_eval: int = Field(
         default=20,
         ge=1,

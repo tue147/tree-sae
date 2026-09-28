@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 from sae_lens import SAE
-from typing import Any
 from tqdm.autonotebook import tqdm
 from transformer_lens import HookedTransformer
 
@@ -80,32 +80,18 @@ def calculate_projection_and_cos_sims(
                 "prompt": sample.prompt,
                 "num_probe_true_positives": stats.probe_true_positives,
                 "split_feats": stats.split_feats,
-                "split_feat_acts": [
-                    score.activation for score in sample.main_feature_scores
-                ],
-                "split_feat_probe_cos": [
-                    score.probe_cos_sim for score in sample.main_feature_scores
-                ],
+                "split_feat_acts": [score.activation for score in sample.main_feature_scores],
+                "split_feat_probe_cos": [score.probe_cos_sim for score in sample.main_feature_scores],
                 "top_projection_feat": top_feat_score.feature_id,
                 "top_probe_projection": top_feat_score.probe_projection,
                 "top_projection_feat_probe_cos": top_feat_score.probe_cos_sim,
                 "second_projection_feat": second_feat_score.feature_id,
                 "second_probe_projection": second_feat_score.probe_projection,
                 "second_projection_feat_probe_cos": second_feat_score.probe_cos_sim,
-                "probe_projections": [
-                    score.probe_projection
-                    for score in sample.top_projection_feature_scores
-                ],
-                "projection_feats": [
-                    score.feature_id for score in sample.top_projection_feature_scores
-                ],
-                "projection_feat_acts": [
-                    score.activation for score in sample.top_projection_feature_scores
-                ],
-                "projection_feat_probe_cos": [
-                    score.probe_cos_sim
-                    for score in sample.top_projection_feature_scores
-                ],
+                "probe_projections": [score.probe_projection for score in sample.top_projection_feature_scores],
+                "projection_feats": [score.feature_id for score in sample.top_projection_feature_scores],
+                "projection_feat_acts": [score.activation for score in sample.top_projection_feature_scores],
+                "projection_feat_probe_cos": [score.probe_cos_sim for score in sample.top_projection_feature_scores],
                 "absorption_fraction": sample.absorption_fraction,
                 "is_full_absorption": sample.is_full_absorption,
             }
@@ -126,17 +112,16 @@ def get_stats_and_likely_false_negative_tokens(
     results: dict[str, StatsAndLikelyFalseNegativeResults] = {}
     raw_df = load_experiment_df(
         SPARSE_PROBING_EXPERIMENT_NAME,
-        sparse_probing_task_output_dir
-        / get_sparse_probing_raw_results_filename(sae_name, layer),
+        sparse_probing_task_output_dir / get_sparse_probing_raw_results_filename(sae_name, layer),
     )
     for letter in LETTERS:
         split_feats = metrics_df[metrics_df["letter"] == letter]["split_feats"].iloc(  # type: ignore
             0
         )[0]
         k = len(split_feats)
-        potential_false_negatives = raw_df[
-            (raw_df["answer_letter"] == letter) & (raw_df[f"score_probe_{letter}"] > 0)
-        ]["token"].tolist()
+        potential_false_negatives = raw_df[(raw_df["answer_letter"] == letter) & (raw_df[f"score_probe_{letter}"] > 0)][
+            "token"
+        ].tolist()
         num_split_feats_true_positives = raw_df[
             (raw_df["answer_letter"] == letter)
             & (raw_df[f"score_probe_{letter}"] > 0)
@@ -174,9 +159,7 @@ def load_and_run_calculate_projections_and_cos_sims(
     likely_negs = get_stats_and_likely_false_negative_tokens(
         metrics_df, sae_name, layer, sparse_probing_task_output_dir
     )
-    return calculate_projection_and_cos_sims(
-        calculator, sae, probe, likely_negs=likely_negs, layer=layer
-    )
+    return calculate_projection_and_cos_sims(calculator, sae, probe, likely_negs=likely_negs, layer=layer)
 
 
 def run_feature_absortion_experiment(
@@ -189,20 +172,18 @@ def run_feature_absortion_experiment(
     prompt_token_pos: int,
     device: str,
     experiment_dir: Path | str = RESULTS_DIR / FEATURE_ABSORPTION_EXPERIMENT_NAME,
-    sparse_probing_experiment_dir: Path | str = RESULTS_DIR
-    / SPARSE_PROBING_EXPERIMENT_NAME,
+    sparse_probing_experiment_dir: Path | str = RESULTS_DIR / SPARSE_PROBING_EXPERIMENT_NAME,
     probes_dir: Path | str = PROBES_DIR,
     force: bool = False,
     feature_split_f1_jump_threshold: float = 0.03,
     batch_size: int = 10,
+    hook_point: str | None = None,
 ) -> pd.DataFrame:
     """
     NOTE: this experiments requires the results of the k-sparse probing experiments. Make sure to run them first.
     """
     task_output_dir = get_or_make_dir(experiment_dir) / sae_name
-    sparse_probing_task_output_dir = (
-        get_or_make_dir(sparse_probing_experiment_dir) / sae_name
-    )
+    sparse_probing_task_output_dir = get_or_make_dir(sparse_probing_experiment_dir) / sae_name
 
     vocab = get_alpha_tokens(model.tokenizer)  # type: ignore
     calculator = FeatureAbsorptionCalculator(
@@ -212,6 +193,7 @@ def run_feature_absortion_experiment(
         base_template=prompt_template,
         answer_formatter=first_letter_formatter(),
         word_token_pos=prompt_token_pos,
+        hook_point=hook_point,
         full_absorption_probe_cos_sim_threshold=FULL_ABSORPTION_PROBE_COS_THRESHOLD,
         absorption_fraction_probe_cos_sim_threshold=ABSORPTION_FRACTION_PROBE_COS_THRESHOLD,
         probe_projection_proportion_threshold=ABSORPTION_PROBE_PROJECTION_PROPORTION_THRESHOLD,
@@ -220,8 +202,7 @@ def run_feature_absortion_experiment(
     )
     metrics_df = load_experiment_df(
         SPARSE_PROBING_EXPERIMENT_NAME,
-        sparse_probing_task_output_dir
-        / get_sparse_probing_metrics_filename(sae_name, layer),
+        sparse_probing_task_output_dir / get_sparse_probing_metrics_filename(sae_name, layer),
     )
     add_feature_splits_to_metrics_df(
         metrics_df,

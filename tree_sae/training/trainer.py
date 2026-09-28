@@ -71,7 +71,9 @@ def train(cfg: TrainConfig, device: str = "cuda", max_steps: int | None = None, 
     """
     dtype = getattr(torch, cfg.model_dtype)
     model = HookedTransformer.from_pretrained(cfg.model_name, device=device, dtype=dtype)
-    train_loader = token_dataloader(cfg.dataset, cfg.tokenizer_name, cfg.seq_len, cfg.batch_size, "train", cfg.num_workers)
+    train_loader = token_dataloader(
+        cfg.dataset, cfg.tokenizer_name, cfg.seq_len, cfg.batch_size, "train", cfg.num_workers
+    )
     val_loader = token_dataloader(cfg.dataset, cfg.tokenizer_name, cfg.seq_len, cfg.batch_size, "val", cfg.num_workers)
 
     seed_all(cfg.seed)

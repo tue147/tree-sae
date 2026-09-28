@@ -21,6 +21,7 @@ import torch
 from transformer_lens import HookedTransformer
 
 from ...models import BaseSAE
+from .common import RESULTS_DIR
 from .eval_config import AbsorptionEvalConfig
 from .eval_output import (
     EVAL_TYPE_ID_ABSORPTION,
@@ -29,7 +30,6 @@ from .eval_output import (
     AbsorptionMetricCategories,
     AbsorptionResultDetail,
 )
-from .common import RESULTS_DIR
 from .feature_absorption import FEATURE_ABSORPTION_EXPERIMENT_NAME, run_feature_absortion_experiment
 from .k_sparse_probing import SPARSE_PROBING_EXPERIMENT_NAME, run_k_sparse_probing_experiment
 
@@ -126,6 +126,7 @@ def run_absorption_eval(
             experiment_dir=artifacts_dir / FEATURE_ABSORPTION_EXPERIMENT_NAME,
             sparse_probing_experiment_dir=sparse_probing_dir,
             probes_dir=probes_dir,
+            hook_point=sae.cfg.hook_name if config.use_sae_hook_for_absorption else None,
         )
 
         absorption_fractions, full_absorption_rates, n_split_features, details = [], [], [], []

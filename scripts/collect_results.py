@@ -61,13 +61,18 @@ def main() -> None:
 
     def series(values: dict, keys: list) -> dict:
         return {
-            metric: {name: [points.get(k) for k in keys] for name, points in by_series.items()
-                     if all(k in points for k in keys)}
+            metric: {
+                name: [points.get(k) for k in keys]
+                for name, points in by_series.items()
+                if all(k in points for k in keys)
+            }
             for metric, by_series in values.items()
         }
 
-    out = {"main": {"x": "L0", "L0": L0, **series(main_values, L0)},
-           "scaling": {"x": "dictionary size", "dictionary_size": SIZES, **series(scaling_values, SIZES)}}
+    out = {
+        "main": {"x": "L0", "L0": L0, **series(main_values, L0)},
+        "scaling": {"x": "dictionary size", "dictionary_size": SIZES, **series(scaling_values, SIZES)},
+    }
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(out, indent=2))
     print(f"wrote {args.out}")

@@ -1,7 +1,7 @@
 import random
+from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
-from typing import Callable
 
 VERBOSE_FIRST_LETTER_TEMPLATE = "{word} has the first letter:"
 VERBOSE_FIRST_LETTER_TOKEN_POS = -6
@@ -113,9 +113,7 @@ def create_icl_prompt(
                 break
 
             if attempts >= max_attempts:
-                raise ValueError(
-                    f"Could not find a non-contaminated set of examples after {max_attempts} attempts."
-                )
+                raise ValueError(f"Could not find a non-contaminated set of examples after {max_attempts} attempts.")
     else:
         if shuffle_examples:
             icl_examples = random.sample(examples, max_icl_examples)

@@ -12,7 +12,7 @@ import torch
 from tree_sae.analysis.geometry import descendants, label_by_child
 from tree_sae.analysis.probe_correlation import activation_coverage, children_by_coverage
 from tree_sae.analysis.tree_vis import save_feature_tree, subtree
-from tree_sae.models import MatryoshkaSAE, MPSAE, ReLUSAE, TopKSAE, TreeSAE
+from tree_sae.models import MPSAE, MatryoshkaSAE, ReLUSAE, TopKSAE, TreeSAE
 from tree_sae.models.allocation import greedy_allocation
 from tree_sae.models.io import load_sae, save_sae
 from tree_sae.training.config import TrainConfig
@@ -42,9 +42,7 @@ def test_greedy_allocation_is_optimal(seed):
     def payoff(k):
         return min(capacities[p].item() / k[p] for p in range(n_parents) if k[p] > 0)
 
-    best = max(
-        payoff(k) for k in itertools.product(range(n_children + 1), repeat=n_parents) if sum(k) == n_children
-    )
+    best = max(payoff(k) for k in itertools.product(range(n_children + 1), repeat=n_parents) if sum(k) == n_children)
     assert payoff(quotas.tolist()) == pytest.approx(best)
 
 
@@ -198,8 +196,17 @@ def test_paper_figures(tmp_path):
     import sys
 
     subprocess.run(
-        [sys.executable, str(ROOT / "scripts/figures/plot_metrics.py"), "--results",
-         str(ROOT / "results/paper_results.json"), "--out", str(tmp_path), "--format", "png"],
-        check=True, capture_output=True,
+        [
+            sys.executable,
+            str(ROOT / "scripts/figures/plot_metrics.py"),
+            "--results",
+            str(ROOT / "results/paper_results.json"),
+            "--out",
+            str(tmp_path),
+            "--format",
+            "png",
+        ],
+        check=True,
+        capture_output=True,
     )
     assert len(list(tmp_path.glob("fig*.png"))) == 7

@@ -18,9 +18,7 @@ class BaseEvalConfig:
 
     def __init__(self):
         if type(self) is BaseEvalConfig:
-            raise ValueError(
-                "BaseEvalConfig is an abstract class and cannot be instantiated directly."
-            )
+            raise ValueError("BaseEvalConfig is an abstract class and cannot be instantiated directly.")
 
 
 BaseEvalConfigType = TypeVar("BaseEvalConfigType", bound=BaseEvalConfig)
@@ -31,18 +29,14 @@ BaseEvalConfigType = TypeVar("BaseEvalConfigType", bound=BaseEvalConfig)
 class BaseMetrics:
     def __init__(self):
         if type(self) is BaseMetrics:
-            raise ValueError(
-                "BaseMetrics is an abstract class and cannot be instantiated directly."
-            )
+            raise ValueError("BaseMetrics is an abstract class and cannot be instantiated directly.")
 
     @model_validator(mode="after")
     @classmethod
     def validate_dict(cls, data):
         for _, value in asdict(data).items():
             if isinstance(value, dict):
-                raise ValueError(
-                    "Metrics is designed to be a flat, one-level structure, so dicts are not allowed."
-                )
+                raise ValueError("Metrics is designed to be a flat, one-level structure, so dicts are not allowed.")
         return data
 
 
@@ -53,25 +47,19 @@ BaseMetricsType = TypeVar("BaseMetricsType", bound=BaseMetrics)
 class BaseMetricCategories:
     def __init__(self):
         if type(self) is BaseMetricCategories:
-            raise ValueError(
-                "BaseMetricCategories is an abstract class and cannot be instantiated directly."
-            )
+            raise ValueError("BaseMetricCategories is an abstract class and cannot be instantiated directly.")
 
     @model_validator(mode="after")
     @classmethod
     def validate_base_metric_type(cls, data):
         for field_name, field_value in data.__dict__.items():
             if not isinstance(field_value, BaseMetrics):
-                raise ValueError(
-                    f"Field '{field_name}' in {cls.__name__} must inherit from BaseMetrics."
-                )
+                raise ValueError(f"Field '{field_name}' in {cls.__name__} must inherit from BaseMetrics.")
 
         return data
 
 
-BaseMetricCategoriesType = TypeVar(
-    "BaseMetricCategoriesType", bound=BaseMetricCategories
-)
+BaseMetricCategoriesType = TypeVar("BaseMetricCategoriesType", bound=BaseMetricCategories)
 
 
 @dataclass
@@ -83,9 +71,7 @@ BaseResultDetailType = TypeVar("BaseResultDetailType", bound=BaseResultDetail)
 
 
 @dataclass
-class BaseEvalOutput(
-    Generic[BaseEvalConfigType, BaseMetricCategoriesType, BaseResultDetailType]
-):
+class BaseEvalOutput(Generic[BaseEvalConfigType, BaseMetricCategoriesType, BaseResultDetailType]):
     def to_json(self, indent: int = 2) -> str:
         """
         Dump the BaseEvalOutput object to a JSON string.
@@ -177,7 +163,5 @@ class BaseEvalOutput(
 
     def __init__(self, eval_config: BaseEvalConfigType):
         if type(self) is BaseEvalOutput:
-            raise ValueError(
-                "BaseEvalOutput is an abstract class and cannot be instantiated directly."
-            )
+            raise ValueError("BaseEvalOutput is an abstract class and cannot be instantiated directly.")
         self.eval_config = eval_config

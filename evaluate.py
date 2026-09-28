@@ -80,6 +80,12 @@ def main() -> None:
     parser.add_argument("--probe_batch_size", type=int, default=4096)
     parser.add_argument("--mcs_binary", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--mcs_scaled", action=argparse.BooleanOptionalAction, default=False)
+    # absorption
+    parser.add_argument(
+        "--absorption_sae_hook",
+        action="store_true",
+        help="Run the absorption stage at the SAE's hook instead of blocks.{layer}.hook_resid_post (paper setting)",
+    )
     # autointerp
     parser.add_argument("--n_latents", type=int, default=200)
     args = parser.parse_args()
@@ -93,7 +99,11 @@ def main() -> None:
 
         loaded = [(name, load(loc, args.device)) for name, loc in saes]
         config = AbsorptionEvalConfig(
-            model_name=args.model_name, random_seed=args.seed, llm_batch_size=args.batch_size, llm_dtype="float32"
+            model_name=args.model_name,
+            random_seed=args.seed,
+            llm_batch_size=args.batch_size,
+            llm_dtype="float32",
+            use_sae_hook_for_absorption=args.absorption_sae_hook,
         )
         results = run_absorption_eval(
             config, loaded, layer_of(loaded[0][1]), args.device, str(output_dir / "absorption_raw"), True
@@ -125,8 +135,12 @@ def main() -> None:
             config, loaded, layer_of(loaded[0][1]), args.device, api_key, str(output_dir / "autointerp_raw"), True
         )
         for name, result in results.items():
-            save({"autointerp": result["eval_result_metrics"]["autointerp"]["autointerp_score"]}, output_dir,
-                 "autointerp", name)
+            save(
+                {"autointerp": result["eval_result_metrics"]["autointerp"]["autointerp_score"]},
+                output_dir,
+                "autointerp",
+                name,
+            )
         return
 
     for name, location in saes:
@@ -157,24 +171,39 @@ def main() -> None:
                     raise ValueError("co-occurrence is defined for Tree SAEs only")
                 padded = indices.clone()
                 padded[values < 1e-3] = sae.cfg.d_sae
-                save({"sibling_cooccurrence": average_sibling_cooccurrence(sae, padded)}, output_dir,
-                     "cooccurrence", name)
+                save(
+                    {"sibling_cooccurrence": average_sibling_cooccurrence(sae, padded)},
+                    output_dir,
+                    "cooccurrence",
+                    name,
+                )
                 continue
 
             from tree_sae.evals.hierarchy import run_hierarchy_eval
 
             with torch.no_grad():
                 results = run_hierarchy_eval(
-                    sae, acts, indices, values, args.device, n_parents=args.n_parents, dense_ratio=args.dense_ratio,
-                    max_children=args.max_children, binary=args.mcs_binary, scaled=args.mcs_scaled,
-                    probe_batch_size=args.probe_batch_size, seed=args.seed,
+                    sae,
+                    acts,
+                    indices,
+                    values,
+                    args.device,
+                    n_parents=args.n_parents,
+                    dense_ratio=args.dense_ratio,
+                    max_children=args.max_children,
+                    binary=args.mcs_binary,
+                    scaled=args.mcs_scaled,
+                    probe_batch_size=args.probe_batch_size,
+                    seed=args.seed,
                 )
             save(
                 {
                     "hierarchy_mcs": results["mcs"].score(),
                     "hierarchy_tree_structure": results["tree"].score() if isinstance(sae, TreeSAE) else None,
-                    "pairs": {k: dataclasses.asdict(v) | {"top_features": [t[:5].tolist() for t in v.top_features]}
-                              for k, v in results.items()},
+                    "pairs": {
+                        k: dataclasses.asdict(v) | {"top_features": [t[:5].tolist() for t in v.top_features]}
+                        for k, v in results.items()
+                    },
                 },
                 output_dir,
                 "hierarchy",

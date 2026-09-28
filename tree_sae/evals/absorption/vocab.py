@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 
 from transformers.tokenization_utils_fast import PreTrainedTokenizerFast
 
@@ -26,11 +26,7 @@ def convert_tokens_to_string(token: str, tokenizer: PreTrainedTokenizerFast) -> 
     converted = tokenizer.convert_tokens_to_string([token])
     # special case for mistral tokenizer's broken handling of leading space tokens
     # see: https://github.com/adamkarvonen/SAEBench/issues/68#issuecomment-2794621999
-    if (
-        len(token) > 0
-        and token[0] == "▁"
-        and (len(converted) == 0 or converted[0] != " ")
-    ):
+    if len(token) > 0 and token[0] == "▁" and (len(converted) == 0 or converted[0] != " "):
         converted = " " + converted
     return converted
 
@@ -47,6 +43,4 @@ def get_alpha_tokens(
             return False
         return all(char in ALL_ALPHA_LETTERS for char in token)
 
-    return get_tokens(
-        tokenizer, filter_alpha, replace_special_chars=replace_special_chars
-    )
+    return get_tokens(tokenizer, filter_alpha, replace_special_chars=replace_special_chars)

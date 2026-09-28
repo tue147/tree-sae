@@ -1,7 +1,6 @@
 from pydantic import ConfigDict, Field
 from pydantic.dataclasses import dataclass
 
-from .config import AutoInterpEvalConfig
 from ..eval_output import (
     DEFAULT_DISPLAY,
     BaseEvalOutput,
@@ -9,6 +8,7 @@ from ..eval_output import (
     BaseMetrics,
     BaseResultDetail,
 )
+from .config import AutoInterpEvalConfig
 
 EVAL_TYPE_ID_AUTOINTERP = "autointerp"
 

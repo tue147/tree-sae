@@ -16,8 +16,11 @@ from tree_sae.models.io import from_pretrained, load_sae
 
 def add_common_args(parser: argparse.ArgumentParser, single_sae: bool = True) -> None:
     if single_sae:
-        parser.add_argument("--sae", required=True, help="Directory of a saved SAE or hf:<name>, "
-                            "e.g. hf:gpt2-small/tree_sae_2layer_l0_32")
+        parser.add_argument(
+            "--sae",
+            required=True,
+            help="Directory of a saved SAE or hf:<name>, e.g. hf:gpt2-small/tree_sae_2layer_l0_32",
+        )
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--model_name", default="gpt2-small")
     parser.add_argument("--tokenizer_name", default="gpt2")

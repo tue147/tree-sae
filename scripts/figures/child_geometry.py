@@ -1,6 +1,6 @@
 """Geometry of the child feature subspace of a Tree SAE parent (Fig. 9).
 
-    python scripts/figures/child_geometry.py --sae hf:gpt2-small/tree_sae_4layer_l0_32 --parent 5
+python scripts/figures/child_geometry.py --sae hf:gpt2-small/tree_sae_4layer_l0_32 --parent 5
 """
 
 from __future__ import annotations
@@ -29,8 +29,15 @@ def main() -> None:
     args = parser.parse_args()
 
     s = prepare(args)
-    ax, pca = plot_child_geometry(s.sae, s.acts, s.indices, args.parent, vectors=args.vectors,
-                                  vector_length=args.vector_length, title="PCA of child features")
+    ax, pca = plot_child_geometry(
+        s.sae,
+        s.acts,
+        s.indices,
+        args.parent,
+        vectors=args.vectors,
+        vector_length=args.vector_length,
+        title="PCA of child features",
+    )
     print("explained variance ratio:", pca.explained_variance_ratio_)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

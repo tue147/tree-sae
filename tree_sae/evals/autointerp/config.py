@@ -170,11 +170,7 @@ class AutoInterpEvalConfig:
     @property
     def n_ex_for_scoring(self) -> int:
         """For scoring phase, we use a randomly shuffled mix of top-k activations and random sequences."""
-        return (
-            self.n_top_ex_for_scoring
-            + self.n_random_ex_for_scoring
-            + self.n_iw_sampled_ex_for_scoring
-        )
+        return self.n_top_ex_for_scoring + self.n_random_ex_for_scoring + self.n_iw_sampled_ex_for_scoring
 
     @property
     def n_iw_sampled_ex(self) -> int:

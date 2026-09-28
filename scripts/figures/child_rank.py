@@ -39,8 +39,16 @@ def main() -> None:
     for location in args.saes:
         args.sae = location
         s = prepare(args)
-        results = run_hierarchy_eval(s.sae, s.acts, s.indices, s.values, args.device, n_parents=args.n_parents,
-                                     max_children=args.n_children, seed=args.seed)
+        results = run_hierarchy_eval(
+            s.sae,
+            s.acts,
+            s.indices,
+            s.values,
+            args.device,
+            n_parents=args.n_parents,
+            max_children=args.n_children,
+            seed=args.seed,
+        )
         curves.append(parent_similarity_by_child_rank(results["mcs"], args.n_children))
 
     plt.style.use("seaborn-v0_8")

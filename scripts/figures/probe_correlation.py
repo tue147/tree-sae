@@ -50,8 +50,15 @@ def plot(reports, path: Path) -> None:
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
         for bar in bars:
-            ax.annotate(f"{bar.get_height():.2f}", xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
-                        xytext=(0, 5), textcoords="offset points", ha="center", va="bottom", fontsize=18)
+            ax.annotate(
+                f"{bar.get_height():.2f}",
+                xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
+                xytext=(0, 5),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=18,
+            )
     plt.tight_layout()
     fig.savefig(path, bbox_inches="tight")
 
@@ -73,8 +80,10 @@ def main() -> None:
     reports = probe_report(s.sae, s.acts, s.indices, args.parent, children, args.device)
     print(f"{'child':>8} {'coverage':>9} {'sim(parent)':>12} {'sim(child)':>11} {'parent rank':>12} {'S_res':>7}")
     for r in reports:
-        print(f"{r.child:>8} {r.coverage:>9.3f} {r.parent_similarity:>12.3f} {r.child_similarity:>11.3f} "
-              f"{r.parent_rank:>12} {r.reconstruction_score:>7.3f}")
+        print(
+            f"{r.child:>8} {r.coverage:>9.3f} {r.parent_similarity:>12.3f} {r.child_similarity:>11.3f} "
+            f"{r.parent_rank:>12} {r.reconstruction_score:>7.3f}"
+        )
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     plot(reports, out / f"probe_correlation_parent{args.parent}.pdf")

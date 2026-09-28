@@ -76,7 +76,5 @@ class LLMActivations:
         def hook_fn(acts: Tensor, hook) -> None:
             cache["acts"] = acts.detach()
 
-        self.model.run_with_hooks(
-            batch[0], fwd_hooks=[(self.hook_name, hook_fn)], stop_at_layer=self.stop_at_layer
-        )
+        self.model.run_with_hooks(batch[0], fwd_hooks=[(self.hook_name, hook_fn)], stop_at_layer=self.stop_at_layer)
         return cache["acts"].to(self.model.cfg.device)

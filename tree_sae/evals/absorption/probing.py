@@ -1,29 +1,26 @@
 import os
 import random
+from collections.abc import Callable
 from dataclasses import dataclass
-from math import exp, log
 from pathlib import Path
-from typing import Callable, Literal
 
 import numpy as np
 import pandas as pd
 import torch
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-from torch import nn, optim
 from torch.nn.functional import one_hot
-from torch.utils.data import DataLoader, TensorDataset
 
 # Autocheck if the instance is a notebook or not (fixes weird bugs in colab)
 from tqdm.autonotebook import tqdm
 from transformer_lens import HookedTransformer
 
+from ..probing import DEFAULT_DEVICE, LinearProbe, train_multi_probe
+from ..utils import batchify
 from .prompting import (
     Formatter,
     SpellingPrompt,
     create_icl_prompt,
 )
-from ..probing import DEFAULT_DEVICE, LinearProbe, train_multi_probe
-from ..utils import batchify
 from .vocab import LETTERS
 
 
@@ -34,9 +31,7 @@ def create_dataset_probe_training(
     base_template: str,
     max_icl_examples: int = 10,
     train_test_fraction: float = 0.8,
-    answer_class_fn: Callable[[str], int] = lambda answer: LETTERS.index(
-        answer.strip().lower()
-    ),
+    answer_class_fn: Callable[[str], int] = lambda answer: LETTERS.index(answer.strip().lower()),
     # Mistral tokenizer handles the first token incorrectly if we don't do this
     prepend_separator_to_first_example: bool = True,
 ) -> tuple[list[tuple[SpellingPrompt, int]], list[tuple[SpellingPrompt, int]]]:
@@ -128,23 +123,12 @@ def gen_and_save_df_acts_probing(
         df.index.name = "index"
 
         memmap_path = os.path.join(task_dir, f"{prefix}_act_tensor.dat")
-        act_tensor_memmap = np.memmap(
-            memmap_path, dtype="float32", mode="w+", shape=(len(dataset), d_model)
-        )
+        act_tensor_memmap = np.memmap(memmap_path, dtype="float32", mode="w+", shape=(len(dataset), d_model))
         with torch.no_grad():
-            for i, batch in enumerate(
-                batchify(dataset, batch_size, show_progress=True)
-            ):
+            for i, batch in enumerate(batchify(dataset, batch_size, show_progress=True)):
                 batch_prompts = [prompt.base for prompt, _ in batch]
-                cache = model.run_with_cache(batch_prompts, names_filter=[hook_point])[
-                    1
-                ]
-                acts = (
-                    cache[hook_point][:, position_idx, :]
-                    .cpu()
-                    .to(torch.float32)
-                    .numpy()
-                )
+                cache = model.run_with_cache(batch_prompts, names_filter=[hook_point])[1]
+                acts = cache[hook_point][:, position_idx, :].cpu().to(torch.float32).numpy()
                 start_idx = i * batch_size
                 end_idx = start_idx + len(batch)
                 act_tensor_memmap[start_idx:end_idx] = acts
@@ -275,12 +259,8 @@ def gen_probe_stats(
                 letter=letter,
                 f1=float(f1_score(letter_val_y, letter_preds, average="binary")),
                 accuracy=float(accuracy_score(letter_val_y, letter_preds)),
-                precision=float(
-                    precision_score(letter_val_y, letter_preds, average="binary")
-                ),
-                recall=float(
-                    recall_score(letter_val_y, letter_preds, average="binary")
-                ),
+                precision=float(precision_score(letter_val_y, letter_preds, average="binary")),
+                recall=float(recall_score(letter_val_y, letter_preds, average="binary")),
             )
         )
     return results

@@ -1,6 +1,6 @@
 """Upload converted SAEs (``convert_checkpoints.py`` output) to the public Hugging Face repository.
 
-    HF_TOKEN=... python scripts/hf/upload_checkpoints.py --folder hf_release
+HF_TOKEN=... python scripts/hf/upload_checkpoints.py --folder hf_release
 """
 
 from __future__ import annotations

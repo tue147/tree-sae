@@ -4,9 +4,9 @@ Shared helpers for experiments
 
 import os
 import re
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from pathlib import Path
-from typing import Callable, Literal
+from typing import Literal
 
 import numpy as np
 import pandas as pd
@@ -50,9 +50,7 @@ def load_or_train_probe(
     dtype: torch.dtype = DEFAULT_DTYPE,
     device: str = DEFAULT_DEVICE,
 ) -> LinearProbe:
-    probe_path = (
-        Path(probes_dir) / f"{model.cfg.model_name}" / f"layer_{layer}" / "probe.pth"
-    )
+    probe_path = Path(probes_dir) / f"{model.cfg.model_name}" / f"layer_{layer}" / "probe.pth"
     if not probe_path.exists():
         print(f"Probe for layer {layer} not found, training...")
         train_and_save_probes(
@@ -95,9 +93,7 @@ def load_probe_data_split_or_train(
     dtype: torch.dtype = DEFAULT_DTYPE,
     device: str = DEFAULT_DEVICE,
 ) -> tuple[torch.Tensor, list[tuple[str, int]]]:
-    probe_path = (
-        Path(probes_dir) / f"{model.cfg.model_name}" / f"layer_{layer}" / "probe.pth"
-    )
+    probe_path = Path(probes_dir) / f"{model.cfg.model_name}" / f"layer_{layer}" / "probe.pth"
     if not probe_path.exists():
         print(f"Probe for layer {layer} not found, training...")
         train_and_save_probes(
@@ -133,10 +129,7 @@ def load_probe_data_split(
         Path(probes_dir) / f"{model.cfg.model_name}" / f"layer_{layer}" / "data.npz",
     )
     df = pd.read_csv(
-        Path(probes_dir)
-        / f"{model.cfg.model_name}"
-        / f"layer_{layer}"
-        / f"{split}_df.csv",
+        Path(probes_dir) / f"{model.cfg.model_name}" / f"layer_{layer}" / f"{split}_df.csv",
         keep_default_na=False,
         na_values=[""],
     )
@@ -158,9 +151,7 @@ def _parse_probe_data_split(
 ) -> tuple[torch.Tensor, list[tuple[str, int]]]:
     valid_act_indices = []
     vocab_with_labels = []
-    raw_tokens_with_labels = [
-        (df.iloc[idx]["token"], label) for idx, label in enumerate(split_labels)
-    ]
+    raw_tokens_with_labels = [(df.iloc[idx]["token"], label) for idx, label in enumerate(split_labels)]
     for idx, (token, label) in enumerate(raw_tokens_with_labels):
         # sometimes we have tokens that look like <0x6A>
         if not isinstance(token, str) or re.match(r"[\d<>]", token):
@@ -195,9 +186,7 @@ def load_experiment_df(
     Helper to load a DF or error if it doesn't exist.
     """
     if not path.exists():
-        raise FileNotFoundError(
-            f"{path} does not exist. Run the {experiment_name} experiment first."
-        )
+        raise FileNotFoundError(f"{path} does not exist. Run the {experiment_name} experiment first.")
     return pd.read_parquet(path)
 
 
@@ -247,17 +236,15 @@ def create_and_train_probe(
     )
 
     layer = int(hook_point.split(".")[1])
-    
-    train_df, test_df, train_activations, test_activations = (
-        gen_and_save_df_acts_probing(
-            model=model,
-            train_dataset=train_dataset,
-            test_dataset=test_dataset,
-            path=Path(probes_dir) / f"{model.cfg.model_name}" / f"layer_{layer}",
-            hook_point=hook_point,
-            batch_size=batch_size,
-            position_idx=pos_idx,
-        )
+
+    train_df, test_df, train_activations, test_activations = gen_and_save_df_acts_probing(
+        model=model,
+        train_dataset=train_dataset,
+        test_dataset=test_dataset,
+        path=Path(probes_dir) / f"{model.cfg.model_name}" / f"layer_{layer}",
+        hook_point=hook_point,
+        batch_size=batch_size,
+        position_idx=pos_idx,
     )
 
     num_classes = 26
@@ -292,7 +279,7 @@ def train_and_save_probes(
     device=DEFAULT_DEVICE,
 ):
     vocab = get_alpha_tokens(model.tokenizer)  # type: ignore
-    for layer in tqdm(layers):
+    for _layer in tqdm(layers):
         create_and_train_probe(
             model=model,
             hook_point=hook_point,
