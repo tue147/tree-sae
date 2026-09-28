@@ -125,6 +125,8 @@ class TreeSAE(MatryoshkaSAE):
         """Global ids of the children of ``parent`` across all layers (excluding root children)."""
         children = []
         for layer in range(1, self.n_layers):
+            if parent >= self.layer_start(layer):  # parents always sit in an earlier layer
+                continue
             index = self.parent_index(layer)
             children += ((index == parent).nonzero().squeeze(-1) + self.layer_start(layer)).tolist()
         return children
