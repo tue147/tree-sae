@@ -210,3 +210,17 @@ def test_paper_figures(tmp_path):
         capture_output=True,
     )
     assert len(list(tmp_path.glob("fig*.png"))) == 7
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_allocation_order(legacy):
+    """With the fixed order every layer's capacity is reset by a reallocation; in the research
+    code (legacy) deeper layers already hold the current step's loss afterwards."""
+    sae = _tree(realloc_interval=1, max_realloc_interval=1, legacy_allocation_order=legacy)
+    sae.encode(torch.randn(2, 5, 16))  # sets which parents fired in the batch
+    sae.update_allocation(torch.tensor(1.0))
+    assert sae.capacity[1].sum() == 0
+    if legacy:
+        assert sae.capacity[2].sum() > 0
+    else:
+        assert sae.capacity[2].sum() == 0

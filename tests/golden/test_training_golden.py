@@ -91,6 +91,7 @@ def _build_sae(golden: dict):
         root_reset_step=spec["force_root_attach_steps"],
         root_init_frac=spec["root_init_frac"],
         aux_layers=tuple(spec["aux_layers"]),
+        legacy_allocation_order=spec.get("legacy_allocation_order", True),
         **base,
     )
 
@@ -212,3 +213,24 @@ def test_training_matches_original(name: str) -> None:
             _assert_same(rec.tree_state["capacity"][boundaries.index(int(key))], expected, exact, f"capacity {key}")
         assert rec.tree_state["realloc_interval"] == trackers["nbatch_dynamic_alloc"]
         assert rec.tree_state["root_reset_done"] == trackers["forced_root_done"]
+
+
+def test_training_fixed_allocation_order() -> None:
+    """Regression test of the default (fixed) allocation order, see make_fixed_order_fixture.py."""
+    path = FIXTURES / "train_tree_4layer_fixed_order.pt"
+    if not path.exists():
+        pytest.skip("fixture not generated")
+    golden = torch.load(path, weights_only=False)
+    exact = _exact_expected(golden)
+    _, rec = _run(golden)
+    for step in range(golden["n_steps"]):
+        _assert_same(rec.loss[step], golden["loss"][step], exact, f"loss step {step}")
+        for key, value in golden["metrics"][step].items():
+            _assert_same(rec.metrics[step][key], value, exact, f"{key} step {step}")
+        for layer, expected in golden["alloc"][step].items():
+            _assert_same(rec.parent_index[step][layer], expected, True, f"allocation {layer} step {step}")
+    for key, expected in golden["final_state"].items():
+        _assert_same(rec.final_state[key], expected, exact, f"final {key}")
+    # the fix must actually change training relative to the research code
+    legacy = _load("tree_4layer")
+    assert not torch.equal(torch.stack(rec.loss).reshape(-1), legacy["loss"].reshape(-1))

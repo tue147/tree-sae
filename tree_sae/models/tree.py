@@ -46,6 +46,7 @@ class TreeSAE(MatryoshkaSAE):
         root_reset_step: int | None = 50_000,
         root_init_frac: float = 0.0,
         aux_layers: tuple[int, ...] = (0,),
+        legacy_allocation_order: bool = False,
     ) -> None:
         """
         Args:
@@ -60,6 +61,10 @@ class TreeSAE(MatryoshkaSAE):
             root_init_frac: Minimum fraction of every layer's children attached to the root, both at
                 initialisation and at every reallocation (Appendix G; 0 in the paper's GPT-2 runs).
             aux_layers: 0-based privilege layers that get the auxiliary loss.
+            legacy_allocation_order: Reproduce the research code that trained the released
+                checkpoints, where the reallocation schedule was checked inside the loop that
+                accumulates capacities (so deeper layers received the current step's loss after
+                their capacities had been reset). Only needed for exact reproduction.
         """
         assert len(k_per_layer) == len(features_per_layer)
         super().__init__(
@@ -104,6 +109,7 @@ class TreeSAE(MatryoshkaSAE):
         self.root_reset_step = root_reset_step
         self.root_init_frac = float(root_init_frac)
         self.aux_layers = set(aux_layers)
+        self.legacy_allocation_order = legacy_allocation_order
         self._steps = 0
         self._steps_since_realloc = 0
         self._root_reset_done = False
@@ -227,8 +233,9 @@ class TreeSAE(MatryoshkaSAE):
             fired = torch.cat([fired, torch.ones(1, device=device)], dim=0)
             self.capacity[layer] = self.capacity[layer].to(device)
             self.capacity[layer] += fired * (loss / fired.sum().clamp(min=1.0))
-            # NOTE: the schedule is checked inside the layer loop (as in the code that produced the
-            # released checkpoints), so deeper layers receive this step's loss after their reset.
+            if self.legacy_allocation_order:
+                self._maybe_reset_or_reallocate()
+        if not self.legacy_allocation_order:
             self._maybe_reset_or_reallocate()
 
     def _maybe_reset_or_reallocate(self) -> None:

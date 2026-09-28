@@ -32,6 +32,7 @@ class SAESpec:
     root_reset_step: int | None = 50_000
     root_init_frac: float = 0.0
     aux_layers: list[int] = field(default_factory=lambda: [0])
+    legacy_allocation_order: bool = False  # True reproduces the research code exactly
 
 
 @dataclass

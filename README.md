@@ -158,10 +158,16 @@ outputs **bit-for-bit** (see Tests), except for these deliberate changes:
 * **Reallocation schedule check.** In the research code the reallocation/root-reset check ran inside
   the loop that accumulates capacities, so deeper layers received the current step's loss after
   their capacities had been reset. The released code accumulates all layers first. The released
-  checkpoints were trained before this fix.
+  checkpoints were trained before this fix; `legacy_allocation_order: true` in a config (or
+  `TreeSAE(..., legacy_allocation_order=True)`) reproduces the old behaviour exactly.
 * **Seeds.** The hierarchy and absorption evaluations were not seeded in the research code (probe
   initialisation, parent sampling, prompt sampling). Both now take `--seed` (default 42), so a re-run
   can differ slightly from the paper numbers.
+* **Absorption hook.** As in SAEBench, the absorption stage (not the k-sparse probing/splitting
+  stage) reads activations at `blocks.{layer}.hook_resid_post`, while the SAEs of the paper are
+  trained on `blocks.5.hook_resid_pre`, i.e. the absorption numbers of the paper apply every SAE to
+  the input of the next block. This is kept by default for comparability with the paper;
+  `evaluate.py absorption --absorption_sae_hook` evaluates each SAE at its own hook.
 * **Absorption vocabulary order.** The first-letter vocabulary was built by iterating
   `tokenizer.vocab`, whose order for fast tokenizers changes between processes; it is now built in
   token-id order.

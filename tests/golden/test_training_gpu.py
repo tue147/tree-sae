@@ -57,6 +57,7 @@ def _spec(golden: dict) -> tuple[SAESpec, int, int]:
         sae_spec.root_reset_step = spec["force_root_attach_steps"]
         sae_spec.root_init_frac = spec["root_init_frac"]
         sae_spec.aux_layers = list(spec["aux_layers"])
+        sae_spec.legacy_allocation_order = True
     return sae_spec, dead_steps, spec.get("parent_eligibility_steps", 0)
 
 

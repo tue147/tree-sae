@@ -55,6 +55,7 @@ def sae_config(sae: BaseSAE) -> dict[str, Any]:
             root_reset_step=sae.root_reset_step,
             root_init_frac=sae.root_init_frac,
             aux_layers=sorted(sae.aux_layers),
+            legacy_allocation_order=sae.legacy_allocation_order,
         )
     return config
 

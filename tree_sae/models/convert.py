@@ -77,7 +77,7 @@ def convert_research_state(
             k_per_layer=hparams["list_k"],
             auxk=hparams["auxk"],
             use_loss_var=hparams["use_loss_var"],
-            **(tree_kwargs or {}),
+            **{"legacy_allocation_order": True, **(tree_kwargs or {})},
             **common,
         )
 

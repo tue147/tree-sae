@@ -57,6 +57,7 @@ def build_sae(
             root_reset_step=spec.root_reset_step,
             root_init_frac=spec.root_init_frac,
             aux_layers=tuple(spec.aux_layers),
+            legacy_allocation_order=spec.legacy_allocation_order,
             **common,
         )
     raise ValueError(f"Unknown SAE type {spec.type!r}")
