@@ -61,7 +61,14 @@ def _sae(golden=None):
 def test_absorption_matches_original(golden, tmp_path):
     from tree_sae.evals.absorption import AbsorptionEvalConfig, run_absorption_eval
 
-    config = AbsorptionEvalConfig(model_name="gpt2-small", random_seed=42, llm_batch_size=32, llm_dtype="float32")
+    # the research code read the absorption activations at blocks.5.hook_resid_post
+    config = AbsorptionEvalConfig(
+        model_name="gpt2-small",
+        random_seed=42,
+        llm_batch_size=32,
+        llm_dtype="float32",
+        use_sae_hook_for_absorption=False,
+    )
     result = run_absorption_eval(
         config, [("sae", _sae(golden))], 5, "cuda", str(tmp_path / "out"), True, artifacts_dir=tmp_path / "artifacts"
     )

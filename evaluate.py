@@ -82,9 +82,9 @@ def main() -> None:
     parser.add_argument("--mcs_scaled", action=argparse.BooleanOptionalAction, default=False)
     # absorption
     parser.add_argument(
-        "--absorption_sae_hook",
+        "--absorption_resid_post",
         action="store_true",
-        help="Run the absorption stage at the SAE's hook instead of blocks.{layer}.hook_resid_post (paper setting)",
+        help="Read the absorption activations at blocks.{layer}.hook_resid_post (SAEBench) instead of the SAE's hook",
     )
     # autointerp
     parser.add_argument("--n_latents", type=int, default=200)
@@ -103,7 +103,7 @@ def main() -> None:
             random_seed=args.seed,
             llm_batch_size=args.batch_size,
             llm_dtype="float32",
-            use_sae_hook_for_absorption=args.absorption_sae_hook,
+            use_sae_hook_for_absorption=not args.absorption_resid_post,
         )
         results = run_absorption_eval(
             config, loaded, layer_of(loaded[0][1]), args.device, str(output_dir / "absorption_raw"), True

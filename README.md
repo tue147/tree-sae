@@ -163,11 +163,11 @@ outputs **bit-for-bit** (see Tests), except for these deliberate changes:
 * **Seeds.** The hierarchy and absorption evaluations were not seeded in the research code (probe
   initialisation, parent sampling, prompt sampling). Both now take `--seed` (default 42), so a re-run
   can differ slightly from the paper numbers.
-* **Absorption hook.** As in SAEBench, the absorption stage (not the k-sparse probing/splitting
-  stage) reads activations at `blocks.{layer}.hook_resid_post`, while the SAEs of the paper are
-  trained on `blocks.5.hook_resid_pre`, i.e. the absorption numbers of the paper apply every SAE to
-  the input of the next block. This is kept by default for comparability with the paper;
-  `evaluate.py absorption --absorption_sae_hook` evaluates each SAE at its own hook.
+* **Absorption hook.** The committed research code (like SAEBench) read the activations of the
+  absorption stage at `blocks.{layer}.hook_resid_post`, although the SAEs are trained on
+  `blocks.5.hook_resid_pre`. The released evaluation reads them at the SAE's own hook, which is also
+  closer to the paper numbers; `evaluate.py absorption --absorption_resid_post` restores the old
+  behaviour.
 * **Absorption vocabulary order.** The first-letter vocabulary was built by iterating
   `tokenizer.vocab`, whose order for fast tokenizers changes between processes; it is now built in
   token-id order.

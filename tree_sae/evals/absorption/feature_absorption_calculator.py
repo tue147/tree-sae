@@ -70,8 +70,8 @@ class FeatureAbsorptionCalculator:
     word_token_pos: int = -2
     batch_size: int = 10
     topk_feats: int = 10
-    # Hook the SAE is applied to. SAEBench (and the paper runs) use ``blocks.{layer}.hook_resid_post``;
-    # set it to the SAE's own hook (e.g. ``blocks.5.hook_resid_pre``) to evaluate it where it was trained.
+    # Hook the absorption activations are read from; ``None`` means SAEBench's
+    # ``blocks.{layer}.hook_resid_post``. The released evaluation passes the SAE's own hook.
     hook_point: str | None = None
 
     # the cosine similarity between the top projecting feature and the probe must be at least this high to count as absorption (full absorption only)
